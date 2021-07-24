@@ -2,9 +2,11 @@ import React from "react";
 import { Typography } from "@material-ui/core";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import AppScaffold from "./layout/AppScaffold";
-import "./style/style.scss";
+// import "./style/style.scss";
 import Login from "./page/Login";
 import Home from "./page/Home";
+import _ from "lodash";
+import L from "leaflet";
 
 export default function App(props) {
   return (
