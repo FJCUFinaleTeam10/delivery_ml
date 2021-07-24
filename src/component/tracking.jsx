@@ -41,6 +41,7 @@ const Tracking = ({ vehicles }) => {
       setSelectedIndex(index);
     }
   };
+  
   const createUpdateFunction = () => () => {
     const fetch = async () => {
       try {
