@@ -2,9 +2,10 @@ import axios from "axios";
 import queryString from "query-string";
 
 const axiosClient = axios.create({
-  baseURL: "http://60.251.157.47:8080",
+  baseURL: "http://127.0.0.1:8000",
   headers: {
     "Content-Type": "application/json",
+    // "Access-Control-Allow-Origin":"*"
   },
   paramsSerializer: (params) => queryString.Stringify(params),
 });

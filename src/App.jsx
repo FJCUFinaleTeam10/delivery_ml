@@ -5,8 +5,7 @@ import AppScaffold from "./layout/AppScaffold";
 // import "./style/style.scss";
 import Login from "./page/Login";
 import Home from "./page/home";
-import _ from "lodash";
-import L from "leaflet";
+import Order from "./page/order";
 
 export default function App(props) {
   return (
@@ -27,8 +26,11 @@ export default function App(props) {
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
-              Welcome to food delivery  app
+              Welcome to food delivery app
             </Typography>
+          </Route>
+          <Route path="/order" exact>
+            <Order/>
           </Route>
           <Route path="*">Page not found!</Route>
         </Switch>
