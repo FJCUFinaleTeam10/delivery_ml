@@ -7,7 +7,7 @@ import Login from "./page/Login";
 import Home from "./page/home";
 import _ from "lodash";
 import L from "leaflet";
-
+import Restaurants from './page/restaurant';
 export default function App(props) {
   return (
     <Router>
@@ -24,6 +24,9 @@ export default function App(props) {
               Something went wrong!!
               <Link to="/">Home</Link>
             </Typography>
+          </Route>
+          <Route path="/restaurant" exact>
+            <Restaurants/>
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
