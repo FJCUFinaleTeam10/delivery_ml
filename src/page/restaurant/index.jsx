@@ -28,8 +28,6 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
 
-
-
 const columns = [
   { id: 'name', label: 'Item', minWidth: 170 },
   { id: 'code', label: 'Price', minWidth: 100 },
@@ -255,7 +253,6 @@ export default function StickyHeadTable() {
                   Your Order
                 </Typography>
                 <div style={{ display: "block", padding: 30 }}>
-                  <h4>How to create ShoppingCart Button in ReactJS?</h4>
                   <div>
                     <Badge color="secondary" badgeContent={itemCount}>
                       <ShoppingCartIcon />{" "}
@@ -263,18 +260,9 @@ export default function StickyHeadTable() {
 
                   </div>
                 </div>
-                <Typography className={classes.pos} color="textSecondary">
-                  adjective
-                </Typography>
-                <Typography variant="body2" component="p">
-                  well meaning and kindly.
-                  <br />
-                  {'"a benevolent smile"'}
-                </Typography>
+               
               </CardContent>
-              <CardActions>
-                <Button size="small">Learn More</Button>
-              </CardActions>
+              
             </Card>
           </paper>
         </Grid>
