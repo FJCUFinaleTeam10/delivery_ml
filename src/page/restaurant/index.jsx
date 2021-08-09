@@ -10,7 +10,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Avatar from '@material-ui/core/Avatar';
 import { deepOrange } from '@material-ui/core/colors';
-import food1 from "../../asset/images/food1.jpg"
+import food from "../../asset/images/food.png"
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -31,8 +31,8 @@ import RemoveIcon from "@material-ui/icons/Remove";
 
 
 const columns = [
-  { id: 'name', label: 'Item', minWidth: 170 },
-  { id: 'code', label: 'Price', minWidth: 100 },
+  { id: 'item', label: 'Item', minWidth: 170 },
+  { id: 'price', label: 'Price', minWidth: 100 },
   {
     id: 'Order',
     label: 'Order',
@@ -42,27 +42,26 @@ const columns = [
   },
 ];
 
-function createData(name, code, population, size) {
-  const density = population / size;
-  return { name, code, population, size, density };
+function createData(item, price) {
+  return { item, price};
 }
 
 const rows = [
-  createData('India', 'NT$150', 1324171354, 3287263),
-  createData('China', 'NT$150', 1403500365, 9596961),
-  createData('Italy', 'NT$150', 60483973, 301340),
-  createData('United States', 'NT$150', 327167434, 9833520),
-  createData('Canada', 'NT$150', 37602103, 9984670),
-  createData('Australia', 'NT$150', 25475400, 7692024),
-  createData('Germany', 'NT$150', 83019200, 357578),
-  createData('Ireland', 'NT$150', 4857000, 70273),
-  createData('Mexico', 'NT$150', 126577691, 1972550),
-  createData('Japan', 'NT$150', 126317000, 377973),
-  createData('France', 'NT$150', 67022000, 640679),
-  createData('United Kingdom', 'NT$150', 67545757, 242495),
-  createData('Russia', 'NT$150', 146793744, 17098246),
-  createData('Nigeria', 'NT$150', 200962417, 923768),
-  createData('Brazil', 'NT$150', 210147125, 8515767),
+  createData('India', 'NT$150'),
+  createData('China', 'NT$150'),
+  createData('Italy', 'NT$150'),
+  createData('United States'),
+  createData('Canada', 'NT$150'),
+  createData('Australia', 'NT$150'),
+  createData('Germany', 'NT$150'),
+  createData('Ireland', 'NT$150'),
+  createData('Mexico', 'NT$150'),
+  createData('Japan', 'NT$150'),
+  createData('France', 'NT$150'),
+  createData('United Kingdom', 'NT$150'),
+  createData('Russia', 'NT$150'),
+  createData('Nigeria', 'NT$150'),
+  createData('Brazil', 'NT$150'),
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -189,40 +188,47 @@ export default function StickyHeadTable() {
                     return (
                       <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
                         {columns.map((column) => {
-                          return (
-                            column.id === 'name' ? (
-                              <TableCell key={column.id} align={column.align}>
-                                {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
-                                <Avatar variant="square" className={classes.square}>
-                                  <img src={food1} alt="Italian Trulli" />
-                                </Avatar>
-                              </TableCell>
-                            ) : (
-                              column.id === 'Order' ? (
-                                <ButtonGroup>
-                                  <Button
-                                    onClick={() => {
-                                      setItemCount(Math.max(itemCount - 1, 0));
-                                    }}
-                                  >
-                                    {" "}
-                                    <RemoveIcon fontSize="small" />
-                                  </Button>
-                                  <Button
-                                    onClick={() => {
-                                      setItemCount(itemCount + 1);
-                                    }}
-                                  >
-                                    {" "}
-                                    <AddIcon fontSize="small" />
-                                  </Button>
-                                </ButtonGroup>
-
-                              ) : (
-                                <TableCell key={column.id} align={column.align}>
-                                  {column.format && typeof row[column.id] === 'number' ? column.format(row[column.id]) : row[column.id]}
-                                </TableCell>
-                              ))
+                          return column.id === "item" ? (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format &&
+                              typeof row[column.id] === "number"
+                                ? column.format(row[column.id])
+                                : row[column.id]}
+                              <Avatar
+                                variant="square"
+                                className={classes.square}
+                              >
+                                <img src={food} alt="Italian Trulli" />
+                              </Avatar>
+                            </TableCell>
+                          ) : column.id === "Order" ? (
+                            <TableCell align={column.align}>
+                              <ButtonGroup>
+                                <Button
+                                  onClick={() => {
+                                    setItemCount(Math.max(itemCount - 1, 0));
+                                  }}
+                                >
+                                  {" "}
+                                  <RemoveIcon fontSize="small" />
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    setItemCount(itemCount + 1);
+                                  }}
+                                >
+                                  {" "}
+                                  <AddIcon fontSize="small" />
+                                </Button>
+                              </ButtonGroup>
+                            </TableCell>
+                          ) : (
+                            <TableCell key={column.id} align={column.align}>
+                              {column.format &&
+                              typeof row[column.id] === "number"
+                                ? column.format(row[column.id])
+                                : row[column.id]}
+                            </TableCell>
                           );
                         })}
 

@@ -6,7 +6,7 @@ import AppScaffold from "./layout/AppScaffold";
 import Login from "./page/Login";
 import Home from "./page/home";
 import Order from "./page/order";
-
+import Restaurant from "./page/restaurant";
 export default function App(props) {
   return (
     <Router>
@@ -23,6 +23,9 @@ export default function App(props) {
               Something went wrong!!
               <Link to="/">Home</Link>
             </Typography>
+          </Route>
+          <Route path="/restaurant" exact>
+          <Restaurant />
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
