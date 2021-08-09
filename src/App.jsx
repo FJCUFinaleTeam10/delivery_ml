@@ -5,6 +5,7 @@ import AppScaffold from "./layout/AppScaffold";
 // import "./style/style.scss";
 import Login from "./page/Login";
 import Home from "./page/home";
+import Order from "./page/order";
 import _ from "lodash";
 import L from "leaflet";
 import Restaurants from './page/restaurant';
@@ -25,12 +26,15 @@ export default function App(props) {
               <Link to="/">Home</Link>
             </Typography>
           </Route>
+          <Route path="/order" exact>
+             <Order/>
+          </Route>
           <Route path="/restaurant" exact>
-            <Restaurants/>
+            <Restaurants />
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
-              Welcome to food delivery  app
+              Welcome to food delivery app
             </Typography>
           </Route>
           <Route path="*">Page not found!</Route>
