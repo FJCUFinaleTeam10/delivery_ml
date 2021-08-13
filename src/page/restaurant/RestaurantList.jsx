@@ -9,7 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import restaurant1 from "../../asset/images/restaurant1.jpg";
-import Rating from '@material-ui/lab/Rating';
+import Rating from "@material-ui/lab/Rating";
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
@@ -103,9 +103,7 @@ export default function RestaurantList() {
                 <Rating
                   name="read-only" value={value} readOnly
                 />
-              </Box>
-
-              
+              </Box>              
             </Grid>
             <CardActions>
               <Button size="small">VIEW MENU</Button>
