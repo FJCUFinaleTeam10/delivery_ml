@@ -3,15 +3,11 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Avatar from '@material-ui/core/Avatar';
 import restaurant1 from "../../asset/images/restaurant1.jpg";
 import Rating from '@material-ui/lab/Rating';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
 import SentimentDissatisfiedIcon from '@material-ui/icons/SentimentDissatisfied';
 import SentimentSatisfiedIcon from '@material-ui/icons/SentimentSatisfied';
@@ -103,21 +99,14 @@ export default function RestaurantList() {
                 <Rating
                   name="read-only" value={value} readOnly
                 />
-              </Box>
-
-              
+              </Box>  
             </Grid>
             <CardActions>
               <Button size="small">VIEW MENU</Button>
             </CardActions>
           </Grid>
         </Paper>
-
-
       </Grid>
-
-
-
     </Grid>
   );
 }
