@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SimplePaper() {
+export default function RestaurantList() {
   const classes = useStyles();
 
   return (
