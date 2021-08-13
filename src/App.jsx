@@ -8,6 +8,7 @@ import Home from "./page/home";
 import _ from "lodash";
 import L from "leaflet";
 import Restaurants from './page/restaurant';
+import RestaurantList from './page/restaurant/RestaurantList';
 export default function App(props) {
   return (
     <Router>
@@ -19,6 +20,9 @@ export default function App(props) {
           <Route path="/login" exact>
             <Login />
           </Route>
+          <Route path="/restaurantList" exact>
+            <RestaurantList />
+          </Route>
           <Route path="/error" exact>
             <Typography variant="h1" color="error">
               Something went wrong!!
@@ -26,11 +30,11 @@ export default function App(props) {
             </Typography>
           </Route>
           <Route path="/restaurant" exact>
-            <Restaurants/>
+            <Restaurants />
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
-              Welcome to food delivery  app
+              Welcome to food delivery app
             </Typography>
           </Route>
           <Route path="*">Page not found!</Route>

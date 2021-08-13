@@ -1,8 +1,5 @@
 import React from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -76,7 +73,7 @@ IconContainer.propTypes = {
 };
 
 
-export default function CustomizedTables() {
+export default function RestaurantList() {
   const classes = useStyles();
   const [value] = React.useState(4);
 

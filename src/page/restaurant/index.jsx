@@ -29,7 +29,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import RestaurantList from "./restaurantList";
+import RestaurantList from "./RestaurantList";
 import { Link } from "react-router-dom";
 
 
