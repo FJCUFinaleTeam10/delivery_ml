@@ -21,6 +21,7 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import restaurantApi from "../../services/restaurantApi";
 import RestaurantCard from "../../component/card/RestaurantCard";
+import Pagination from "@material-ui/lab/Pagination";
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: 900,
@@ -77,12 +78,12 @@ export default function RestaurantList() {
   const [value] = React.useState(4);
   const [restaurantList,setRestaurantList]=useState();
   const [currentPage,setCurrentPage]=useState(1);
-
+  const [currentLimit,setCurrentLimit]=useState(10);
    const array = [1, 2, 3, 4, 5];
 
   useEffect(() => {
     setInterval(() => {
-      setRestaurantList(array);
+      fetch_restaurant_list(array);
       
     }, 5000); // 5s
   }, []);
@@ -93,6 +94,21 @@ const renderRestaurantsList  = () => {
     <RestaurantCard />
    ));
 }
+  const fetch_restaurant_list = async () => {
+    try {
+      const params ={
+        page:currentPage,
+        limit: currentLimit,
+      }
+      console.log(params);
+      const response = await restaurantApi.getRestaurantList(params);
+      console.log(response);
+      setRestaurantList(response);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -131,6 +147,7 @@ const renderRestaurantsList  = () => {
       </Grid>
       {/* <RestaurantCard/> */}
       {renderRestaurantsList()}
+      <Pagination count={10} color="secondary" />
     </div>
   );
 }
