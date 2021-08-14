@@ -3,6 +3,10 @@ const restaurantApi={
   getAll:(params) => {
     const url = '/restaurant/';
     return axiosClient.get(url, { params });
+  },
+    getRestaurantList:(params) => {
+    const url = "/restaurant/getRestaurantList/";
+    return axiosClient.get(url, { params });
   }
 }
 

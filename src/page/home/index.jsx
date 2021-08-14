@@ -8,7 +8,6 @@ import  driverApi from '../../services/driverApi';
 import  restaurantApi from '../../services/restaurantApi';
 import CircularLoading from '../../component/CircularLoading'
 
-
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
