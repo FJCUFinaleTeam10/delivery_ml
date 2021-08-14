@@ -19,7 +19,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAltO
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
-import fakeData from "./fakeData";
+import restaurantApi from "../../services/restaurantApi";
 import RestaurantCard from "../../component/card/RestaurantCard";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,13 +76,17 @@ export default function RestaurantList() {
   const classes = useStyles();
   const [value] = React.useState(4);
   const [restaurantList,setRestaurantList]=useState();
+  const [currentPage,setCurrentPage]=useState(1);
+
    const array = [1, 2, 3, 4, 5];
 
   useEffect(() => {
     setInterval(() => {
       setRestaurantList(array);
+      
     }, 5000); // 5s
   }, []);
+
 const renderRestaurantsList  = () => {
   console.log(array);
    return array.map((restaurant) => (
