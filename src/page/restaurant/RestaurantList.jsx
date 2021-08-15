@@ -19,7 +19,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAltO
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
-import fakeData from "./fakeData";
+import restaurantApi from "../../services/restaurantApi";
 import RestaurantCard from "../../component/card/RestaurantCard";
 import restaurantListBackground from "../../asset/images/restaurantListBackground.jpg"
 
