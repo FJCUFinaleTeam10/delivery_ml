@@ -178,7 +178,7 @@ export default function StickyHeadTable() {
       <Grid container spacing={3}>
         <Grid item xs>
           
-          <Button component={Link} to="/restaurantList" variant="contained" color="primary" disableElevation>
+          <Button component={Link} to="/RestaurantList" variant="contained" color="primary" disableElevation>
             BACK TO SEARCH
           </Button>
           <Grid item xs>
