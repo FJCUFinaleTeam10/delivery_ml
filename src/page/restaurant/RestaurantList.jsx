@@ -113,14 +113,18 @@ export default function RestaurantList() {
   };
   return (
     <div className={classes.root}>
-      <Button
-              width="200"
-              variant="contained"
-              color="#424242"
-              disableElevation
-            >
-              VIEW ON MAP
-            </Button>
+      <div
+        style={{
+          background: `url(${restaurantListBackground})`,
+          backgroundRepeat: "no-repeat",
+          height: "300px",
+          postition: "center",
+          width: "1800px",
+        }}
+      />
+      <Button width="200" variant="contained" color="#424242" disableElevation>
+        VIEW ON MAP
+      </Button>
       {restaurantList.length > 0 ? (
         renderRestaurantsList()
       ) : (
