@@ -21,98 +21,111 @@ import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
 import restaurantApi from "../../services/restaurantApi";
 import RestaurantCard from "../../component/card/RestaurantCard";
-import restaurantListBackground from "../../asset/images/restaurantListBackground.jpg"
-
-
+import restaurantListBackground from "../../asset/images/restaurantListBackground.jpg";
+import restaurantAPi from "../../services/restaurantApi";
+import CircularLoading from "../../component/CircularLoading";
+import Pagination from "@material-ui/lab/Pagination";
 const useStyles = makeStyles((theme) => ({
-    root: {
-        minWidth: 900,
-        minHeight: 100,
-    },
+  root: {
+    position: "relative",
+  },
 
-    paper: {
-        maxWidth: 800,
-        margin: `${theme.spacing(1)}px auto`,
-        padding: theme.spacing(2),
-    },
-    iconFilled: {
-        color: "#ff6d75",
-    },
-    iconHover: {
-        color: "#ff3d47",
-    },
+  paper: {
+    maxWidth: 800,
+    margin: `${theme.spacing(1)}px auto`,
+    padding: theme.spacing(2),
+  },
+  iconFilled: {
+    color: "#ff6d75",
+  },
+  iconHover: {
+    color: "#ff3d47",
+  },
 }));
 
 const customIcons = {
-    1: {
-        icon: <SentimentVeryDissatisfiedIcon />,
-        label: "Very Dissatisfied",
-    },
-    2: {
-        icon: <SentimentDissatisfiedIcon />,
-        label: "Dissatisfied",
-    },
-    3: {
-        icon: <SentimentSatisfiedIcon />,
-        label: "Neutral",
-    },
-    4: {
-        icon: <SentimentSatisfiedAltIcon />,
-        label: "Satisfied",
-    },
-    5: {
-        icon: <SentimentVerySatisfiedIcon />,
-        label: "Very Satisfied",
-    },
+  1: {
+    icon: <SentimentVeryDissatisfiedIcon />,
+    label: "Very Dissatisfied",
+  },
+  2: {
+    icon: <SentimentDissatisfiedIcon />,
+    label: "Dissatisfied",
+  },
+  3: {
+    icon: <SentimentSatisfiedIcon />,
+    label: "Neutral",
+  },
+  4: {
+    icon: <SentimentSatisfiedAltIcon />,
+    label: "Satisfied",
+  },
+  5: {
+    icon: <SentimentVerySatisfiedIcon />,
+    label: "Very Satisfied",
+  },
 };
 
 function IconContainer(props) {
-    const { value, ...other } = props;
-    return <span {...other}>{customIcons[value].icon}</span>;
+  const { value, ...other } = props;
+  return <span {...other}>{customIcons[value].icon}</span>;
 }
 
 IconContainer.propTypes = {
-    value: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
 export default function RestaurantList() {
-    const classes = useStyles();
-    const [value] = React.useState(4);
-    const [restaurantList, setRestaurantList] = useState();
-    const array = [1, 2, 3, 4, 5];
-
-    useEffect(() => {
-        setInterval(() => {
-            setRestaurantList(array);
-        }, 5000); // 5s
-    }, []);
-    const renderRestaurantsList = () => {
-        console.log(array);
-        return array.map((restaurant) => (
-            <RestaurantCard />
-        ));
-    }
+  const classes = useStyles();
+  const [value] = React.useState(4);
+  const [restaurantList, setRestaurantList] = useState([]);
+  const array = [1, 2, 3, 4, 5];
+  const [currentPage, setCurrentPage] = useState(0);
+  const [limit, setLimit] = useState(5);
+  useEffect(() => {
+    setInterval(() => {
+      fetch_restaurant_list();
+    }, 5000); // 5s
+  }, []);
+  const renderRestaurantsList = () => {
     return (
-        <div className={classes.root}>
-            <div style={{
-                background: `url(${restaurantListBackground})`, backgroundRepeat: 'no-repeat',
-                height: '300px', postition: 'center', width: '1800px'
-            }} />
-            <Grid container spacing={3}>
-                <Grid item xs={4}>
-                    <Button
-                        width="200"
-                        variant="contained"
-                        color="#424242"
-                        disableElevation
-                    >
-                        VIEW ON MAP
-                    </Button>
-                </Grid>
-
-            </Grid>
-            {/* <RestaurantCard/> */}
-            {renderRestaurantsList()}
-        </div>
+      <Grid container spacing={3}>
+        {restaurantList.map((restaurant) => (
+          <Grid item xs={12}>
+            <RestaurantCard info={restaurant} />
+          </Grid>
+        ))}
+      </Grid>
     );
+  };
+  const fetch_restaurant_list = async () => {
+    try {
+      const params = {
+        skip: currentPage,
+        limit: limit,
+      };
+      // console.log(params);
+      const response = await restaurantApi.getRestaurantList(params);
+      setRestaurantList(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  return (
+    <div className={classes.root}>
+      <Button
+              width="200"
+              variant="contained"
+              color="#424242"
+              disableElevation
+            >
+              VIEW ON MAP
+            </Button>
+      {restaurantList.length > 0 ? (
+        renderRestaurantsList()
+      ) : (
+        <CircularLoading />
+      )}
+    </div>
+  );
 }

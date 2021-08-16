@@ -6,7 +6,7 @@ import { Container,
 import LeafletMap from "../../component/leaflet.jsx";
 import  driverApi from '../../services/driverApi';
 import  restaurantApi from '../../services/restaurantApi';
-import CircularLoading from '../../component/CircularLoading'
+import CircularLoading from '../../component/CircularLoading';
 
 const useStyles = makeStyles((theme) => ({
   map: {
@@ -70,6 +70,5 @@ export default function Home() {
       )}
 
     </div>
-    // <LeafletMap driverList={driverList} restaurantList={restaurantList} />
   );
 }
