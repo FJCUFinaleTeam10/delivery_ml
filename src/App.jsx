@@ -5,8 +5,10 @@ import AppScaffold from "./layout/AppScaffold";
 // import "./style/style.scss";
 import Login from "./page/Login";
 import Home from "./page/home";
-import Order from "./page/order";
-import Restaurant from "./page/restaurant";
+import _ from "lodash";
+import L from "leaflet";
+import Restaurants from './page/restaurant';
+import RestaurantList from './page/restaurant/RestaurantList';
 export default function App(props) {
   return (
     <Router>
@@ -18,6 +20,9 @@ export default function App(props) {
           <Route path="/login" exact>
             <Login />
           </Route>
+          <Route path="/restaurantList" exact>
+            <RestaurantList />
+          </Route>
           <Route path="/error" exact>
             <Typography variant="h1" color="error">
               Something went wrong!!
@@ -25,15 +30,12 @@ export default function App(props) {
             </Typography>
           </Route>
           <Route path="/restaurant" exact>
-          <Restaurant />
+            <Restaurants />
           </Route>
           <Route path="/" exact>
             <Typography variant="h1" color="primary">
               Welcome to food delivery app
             </Typography>
-          </Route>
-          <Route path="/order" exact>
-            <Order/>
           </Route>
           <Route path="*">Page not found!</Route>
         </Switch>

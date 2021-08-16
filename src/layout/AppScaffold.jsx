@@ -34,14 +34,13 @@ import {
 import SearchBox from "../component/SearchBox";
 import NavLink from "../component/NavLink";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import SimpleLink from "../component/SimpleLink";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
-    marginRight: 36,
+    marginleft:36,
   },
   expanded: {
     flexGrow: 1,
