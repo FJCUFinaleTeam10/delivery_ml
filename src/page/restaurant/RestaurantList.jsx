@@ -92,10 +92,15 @@ export default function RestaurantList() {
             </Grid>
         );
     };
-    const handle = (pageNumber) => {
-        setCurrentPage(pageNumber)
-        fetch_restaurant_list()
-    }
+    const handleChangePaginition = (event, page) => {
+   
+    };
+      const handlePageChanges = (_, page) => {
+          console.log("done");
+           console.log(page);
+           setCurrentPage(page);
+           fetch_restaurant_list();
+      };
 
     const fetch_restaurant_list = async () => {
         try {
@@ -116,27 +121,31 @@ export default function RestaurantList() {
         setPage(value);
     };
     return (
-        
-        <div className={classes.root}>
-            <div
-                style={{
-                    background: `url(${restaurantListBackground})`,
-                    backgroundRepeat: "no-repeat",
-                    height: "300px",
-                    postition: "center",
-                    width: "1800px",
-                }}
-            />
-            <Button width="200" variant="contained" color="#424242" disableElevation>
-                VIEW ON MAP
-            </Button>
-            {restaurantList.length > 0 ? (
-                renderRestaurantsList()
-            ) : (
-                <CircularLoading />
-            )}
+      <div className={classes.root}>
+        <div
+          style={{
+            background: `url(${restaurantListBackground})`,
+            backgroundRepeat: "no-repeat",
+            height: "300px",
+            postition: "center",
+            width: "1800px",
+          }}
+        />
+        <Button
+          width="200"
+          variant="contained"
+          color="#424242"
+          disableElevation
+        >
+          VIEW ON MAP
+        </Button>
+        {restaurantList.length > 0 ? (
+          renderRestaurantsList()
+        ) : (
+          <CircularLoading />
+        )}
 
-            <MemoryRouter initialEntries={['/inbox']} initialIndex={0}>
+        {/* <MemoryRouter initialEntries={['/inbox']} initialIndex={0}>
                 <Route>
                     {({ location }) => {
                         const query = new URLSearchParams(location.search);
@@ -157,13 +166,14 @@ export default function RestaurantList() {
                         );
                     }}
                 </Route>
-            </MemoryRouter>
-
-
-            
-        </div>
-
-
-
+            </MemoryRouter> */}
+        <Pagination
+          count={10}
+          color="primary"
+          justify="center"
+          page={currentPage}
+          onChange={handlePageChanges}
+        />
+      </div>
     );
 }

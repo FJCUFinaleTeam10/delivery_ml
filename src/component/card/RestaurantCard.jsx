@@ -88,7 +88,7 @@ export default function RestaurantCard(props) {
   const classes = useStyles();
   const [value] = React.useState(4);
   const {info}= props;
-  console.log(info);
+  // console.log(info);
 
   return (
     <Card className={classes.root}>
