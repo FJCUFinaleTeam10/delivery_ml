@@ -7,6 +7,7 @@ import LeafletMap from "../../component/leaflet.jsx";
 import  driverApi from '../../services/driverApi';
 import  restaurantApi from '../../services/restaurantApi';
 import CircularLoading from '../../component/CircularLoading';
+import geolocationApi from "../../services/geolocationApi";
 
 const useStyles = makeStyles((theme) => ({
   map: {
@@ -27,23 +28,35 @@ export default function Home() {
   const [restaurantList,setRestaurantList] = useState([]);
   const [driverList, setDriverList] = useState([]);
   const classes = useStyles();
-
+  const [cityList,setCityList] = useState([]);
+  const [selectedCity,setSelectedCity] = useState();
   useEffect(() => {
     setInterval(() => {
+      fetch_city();
       fetchDriverList();
       fetchRestaurantList();
+      
     }, 5000); // 5s
     
   }, []);
     const fetchRestaurantList = async () => {
       try {
-        const response = await restaurantApi.getAll();
+        const params = {
+            limit:10,
+            skip:0,
+        };
+        const response = await restaurantApi.getAll(params);
         setRestaurantList(response);
         
       } catch (e) {
         console.log(e);
       }
     };
+    const fetch_city = async ()=>{
+      const response = await geolocationApi.getAll();
+      setCityList(response);
+
+    }
     const fetchDriverList = async () => {
           try {
             const response = await driverApi.getAll();
