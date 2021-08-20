@@ -10,9 +10,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Order() {
+  
   const [restaurantList,setRestaurantList] = useState([]);
   const [currentRestaurant,setCurrentRestaurant] = useState(null);
   const classes = useStyles();
+
   useEffect(()=>{
     fetch_restaurant_list();
     setTimeout(() => {

@@ -51,7 +51,7 @@ export default function LeafletMap(props) {
   };
     const renderRestaurants =() => {
       return restaurantList.map((v) =>v.latitude &&v.longitude && (
-            <Marker icon={iconRestaurant} position={[v.latitude, v.longitude]} />
+            <Marker icon={iconRestaurant} position={[v.Latitude, v.Longitude]} />
           )
       );
     };

@@ -33,9 +33,7 @@ export default function App(props) {
             <Restaurants />
           </Route>
           <Route path="/" exact>
-            <Typography variant="h1" color="primary">
-              Welcome to food delivery app
-            </Typography>
+            <Home />
           </Route>
           <Route path="*">Page not found!</Route>
         </Switch>

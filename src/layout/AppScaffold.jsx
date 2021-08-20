@@ -180,8 +180,8 @@ function AppScaffold(props) {
           <div style={{ marginRight: "0.5em" }}>
             <SearchBox />
           </div>
-          <NavLink to="/error">Error</NavLink>
-          <NavLink to="/e">Home</NavLink>
+          <NavLink to="/home">Home</NavLink>
+          <NavLink to="/restaurant">Restaurants</NavLink>
           <Avatar src="https://avatars.githubusercontent.com/u/52750799?v=4" />
         </Toolbar>
       </AppBar>
@@ -230,7 +230,7 @@ function AppScaffold(props) {
                   <ListItemIcon>
                     <Dashboard />
                   </ListItemIcon>
-                  <ListItemText primary="Statistics"/>
+                  <ListItemText primary="Statistics" />
                 </ListItem>
               </SimpleLink>
             </Tooltip>
@@ -265,13 +265,13 @@ function AppScaffold(props) {
               </SimpleLink>
             </Tooltip>
             <Tooltip title="Profile" arrow placement="right">
-              <SimpleLink to='/me'>
-              <ListItem className={classes.listItem} button>
-                <ListItemIcon>
-                  <AccountBox />
-                </ListItemIcon>
-                <ListItemText primary="Profile" />
-              </ListItem>
+              <SimpleLink to="/me">
+                <ListItem className={classes.listItem} button>
+                  <ListItemIcon>
+                    <AccountBox />
+                  </ListItemIcon>
+                  <ListItemText primary="Profile" />
+                </ListItem>
               </SimpleLink>
             </Tooltip>
           </List>

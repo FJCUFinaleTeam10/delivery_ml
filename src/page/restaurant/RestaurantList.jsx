@@ -25,6 +25,8 @@ import restaurantListBackground from "../../asset/images/restaurantListBackgroun
 import restaurantAPi from "../../services/restaurantApi";
 import CircularLoading from "../../component/CircularLoading";
 import Pagination from "@material-ui/lab/Pagination";
+
+
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
@@ -80,13 +82,18 @@ export default function RestaurantList() {
   const [value] = React.useState(4);
   const [restaurantList, setRestaurantList] = useState([]);
   const array = [1, 2, 3, 4, 5];
-  const [currentPage, setCurrentPage] = useState(0);
+
+  const[currentPage,  setCurrentPage] = useState(0);
   const [limit, setLimit] = useState(5);
+  
+
   useEffect(() => {
     setInterval(() => {
       fetch_restaurant_list();
     }, 5000); // 5s
   }, []);
+
+
   const renderRestaurantsList = () => {
     return (
       <Grid container spacing={3}>
@@ -104,9 +111,9 @@ export default function RestaurantList() {
         skip: currentPage,
         limit: limit,
       };
-      // console.log(params);
       const response = await restaurantApi.getRestaurantList(params);
       setRestaurantList(response);
+
     } catch (e) {
       console.log(e);
     }
