@@ -2,7 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 
 const axiosClient = axios.create({
-  baseURL: "http://127.0.0.1:8000",
+  baseURL: "http://140.136.151.94:8080",
   headers: {
     "Content-Type": "application/json",
     // "Access-Control-Allow-Origin":"*"
