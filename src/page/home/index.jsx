@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { Container,
         makeStyles,
       } from "@material-ui/core";
@@ -8,7 +8,13 @@ import  driverApi from '../../services/driverApi';
 import  restaurantApi from '../../services/restaurantApi';
 import CircularLoading from '../../component/CircularLoading';
 import geolocationApi from "../../services/geolocationApi";
-
+import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import LocalShippingIcon from "../../asset/images/truck.svg";
+import storeIcon from "../../asset/images/store.png";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
@@ -24,64 +30,114 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+  const center = {
+    Latitude: 51.505,
+    Longitude: -0.09,
+  };
+  // const center = [51.505, -0.09];
+  const zoom = 13;
 export default function Home() {
+
   const [restaurantList,setRestaurantList] = useState([]);
   const [driverList, setDriverList] = useState([]);
   const classes = useStyles();
-  const [cityList,setCityList] = useState([]);
-  const [selectedCity,setSelectedCity] = useState();
+  const [cityList, setCityList] = useState([]);
+  const [selectedCity,setSelectedCity] = useState({
+    Latitude: 23.553118,
+    Longitude: 121.0211024,
+  });
+  const [map, setMap] = useState(null);
+  const [zoom,setZoom] = useState(10);
+
   useEffect(() => {
-    setInterval(() => {
-      fetch_city();
-      fetchDriverList();
-      fetchRestaurantList();
-      
-    }, 5000); // 5s
-    
+      async function fetchCity(){
+        const response = await geolocationApi.getAllCity();
+        setCityList(response);
+      };
+      fetchCity();
+      // console.log([selectedCity.Latitude,selectedCity.Longitude]);
   }, []);
-    const fetchRestaurantList = async () => {
+
+  useEffect(() => {
+    setSelectedCity(cityList[0]);
+  }, [cityList]);
+
+  useEffect(() => {
+    console.log(selectedCity);
+     async function getRestaurantBaseOnCity(){
       try {
         const params = {
-            limit:10,
-            skip:0,
+          city: selectedCity.City,
         };
-        const response = await restaurantApi.getAll(params);
+        const response = await restaurantApi.getRestaurantBaseOnCity(params);
         setRestaurantList(response);
-        
       } catch (e) {
         console.log(e);
       }
     };
-    const fetch_city = async ()=>{
-      const response = await geolocationApi.getAll();
-      setCityList(response);
-
-    }
-    const fetchDriverList = async () => {
-          try {
-            const response = await driverApi.getAll();
-            setDriverList(response);
-          } catch (e) {
-            console.log(e);
-          }
+     async function getDriverBaseOnCity(){
+      try {
+        const params = {
+          city: selectedCity.City,
         };
-    const renderMap = () => {
-      console.log(driverList.length);
-      return(
-      <LeafletMap
-        driverList={driverList}
-        restaurantList={restaurantList}
-        />
+        const response = await driverApi.getDriverBaseOnCity(params);
+        setDriverList(response);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getRestaurantBaseOnCity();
+    getDriverBaseOnCity();
+    console.log(driverList);
+    console.log(restaurantList);
+  }, [selectedCity]);
+
+  useEffect(() =>{
+    console.log(driverList);
+    console.log(restaurantList)
+  },driverList,restaurantList);
+
+const handleChangeCity = (e)=>{
+    var filterCity = cityList.filter(function (el) {
+      return (el.City === e.target.value);
+  });
+    setSelectedCity(filterCity[0]);
+  }
+
+
+
+    const renderSelectCity = () => {
+      return (
+        <div>
+          <TextField
+            id="standard-select-currency"
+            select
+            label="Select city"
+            value={selectedCity.City}
+            onChange={handleChangeCity}
+            helperText="Please select your currency"
+          >
+            {cityList.map((city) => (
+              <MenuItem key={city.id} value={city.City}>
+                {city.City}
+              </MenuItem>
+            ))}
+          </TextField>
+          <LeafletMap
+               driverList={driverList}
+               restaurantList={restaurantList}
+               centerCity={selectedCity}
+          />
+        </div>
       );
      };
   return (
     <div style={{ position: "relative" }}>
-      {driverList.length>0?(
-        renderMap()
-      ):(
-        <CircularLoading/>
+      {cityList.length > 0 && selectedCity !== undefined ? (
+        renderSelectCity() 
+      ) : (
+        <CircularLoading />
       )}
-
     </div>
   );
 }

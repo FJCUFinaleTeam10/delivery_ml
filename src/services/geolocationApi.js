@@ -1,23 +1,14 @@
 import axiosClient from "./axiosClient";
 
-const driverApi = {
-  getCountryCodes: (params) => {
-    const url = ``;
-    return axiosClient.getC(url, { params });
+const geolocationApi = {
+  getAllCountryCodes: () => {
+    const url = `geolocation/getAlll/`;
+    return axiosClient.getC(url);
   },
-
-  getCities: () => {
-    const url = `/driver/`;
-    return axiosClient.get();
-  },
-  getAllCities: () => {
-    const url = `/driver/`;
-    return axiosClient.get();
-  },
-  getAllCOuntryCodes: () => {
-    const url = `/driver/`;
-    return axiosClient.get();
+  getAllCity: () => {
+    const url = `geolocation/getallcities/`;
+    return axiosClient.get(url);
   },
 };
 
-export default driverApi;
+export default geolocationApi;

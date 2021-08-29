@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import osm from './osm-provider';
 import { makeStyles } from "@material-ui/core/styles";
 import L from "leaflet";
@@ -21,17 +21,18 @@ const useStyles = makeStyles((theme) => ({
     backGround: `inherit`,
   },
 }));
+function ChangeView({ center, zoom }) {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
 
 export default function LeafletMap(props) {
   const classes = useStyles();
-  const geoData = [21.028511,105.804817];
   const zoom = 10;
   const {restaurantList} = props;
   const {driverList} = props;
-
-  const center = driverList.length ? [driverList[0].latitude,driverList[0].longitude] : geoData;
-  console.log(center);
-
+  const {centerCity} = props;
   const iconTruck = new L.Icon({
     iconUrl: LocalShippingIcon,
     iconSize: new L.Point(60, 75),
@@ -40,29 +41,45 @@ export default function LeafletMap(props) {
     iconUrl: storeIcon,
     iconSize: new L.Point(60, 75),
   });
+
+
   const renderVehicles =() =>{
-    console.log(driverList);
-  return driverList.map(v => v.latitude && v.longitude &&
-              <Marker
-                icon={iconTruck}
-                position={[v.latitude, v.longitude]}
-              />
-  );           
+    if (driverList.length>0) {
+        return driverList.map(
+          (v) =>
+            v.Latitude &&
+            v.Longitude && (
+              <Marker icon={iconTruck} position={[v.Latitude, v.Longitude]} />
+            )
+        );  
+    }
+         
   };
     const renderRestaurants =() => {
-      return restaurantList.map((v) =>v.latitude &&v.longitude && (
-            <Marker icon={iconRestaurant} position={[v.Latitude, v.Longitude]} />
-          )
-      );
+      if (restaurantList.length > 0) {
+        return restaurantList.map(
+          (v) =>
+            v.Latitude &&
+            v.Longitude && (
+              <Marker
+                icon={iconRestaurant}
+                position={[v.Latitude, v.Longitude]}
+              />
+            )
+        );
+      }
+
     };
   return (
     <MapContainer
       className={classes.map}
-      center={center}
-      zoom={zoom}
-      center={center}
+      center={[centerCity.Latitude, centerCity.Longitude]}
       zoom={zoom}
     >
+      <ChangeView
+        center={[centerCity.Latitude, centerCity.Longitude]}
+        zoom={zoom}
+      />
       <TileLayer
         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         zoomControl="false"
