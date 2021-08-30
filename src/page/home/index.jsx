@@ -15,6 +15,10 @@ import LocalShippingIcon from "../../asset/images/truck.svg";
 import storeIcon from "../../asset/images/store.png";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "../../component/TrackingTab";
+import TrackingTab from "../../component/TrackingTab";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
@@ -42,28 +46,30 @@ export default function Home() {
   const [driverList, setDriverList] = useState([]);
   const classes = useStyles();
   const [cityList, setCityList] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [selectedCity,setSelectedCity] = useState({
     Latitude: 23.553118,
     Longitude: 121.0211024,
   });
   const [map, setMap] = useState(null);
   const [zoom,setZoom] = useState(10);
-
+  const [currentTrackingTab,setCurrentTrackingTab] = useState(0);
   useEffect(() => {
       async function fetchCity(){
         const response = await geolocationApi.getAllCity();
         setCityList(response);
       };
       fetchCity();
-      // console.log([selectedCity.Latitude,selectedCity.Longitude]);
   }, []);
 
   useEffect(() => {
     setSelectedCity(cityList[0]);
   }, [cityList]);
+  useEffect(() => {
+    console.log(currentTrackingTab);
+  }, [currentTrackingTab]);
 
   useEffect(() => {
-    console.log(selectedCity);
      async function getRestaurantBaseOnCity(){
       try {
         const params = {
@@ -101,6 +107,16 @@ const handleChangeCity = (e)=>{
   });
     setSelectedCity(filterCity[0]);
   }
+   const handleChangeTrackingTab = (event, newValue) => {
+     setCurrentTrackingTab(newValue);
+   };
+  const handleClickTrackingTabItem = (event, index) => {
+        if (index === selectedIndex) {
+          setSelectedIndex(null);
+        } else {
+          setSelectedIndex(index);
+        }
+      };
 
 
 
@@ -122,9 +138,17 @@ const handleChangeCity = (e)=>{
             ))}
           </TextField>
           <LeafletMap
-               driverList={driverList}
-               restaurantList={restaurantList}
-               centerCity={selectedCity}
+            driverList={driverList}
+            restaurantList={restaurantList}
+            centerCity={selectedCity}
+          />
+          <TrackingTab
+            driverList={driverList}
+            restaurantList={restaurantList}
+            selectedIndex={selectedIndex}
+            handleClickTrackingTabItem={handleClickTrackingTabItem}
+            currentTrackingTab={currentTrackingTab}
+            handleChangeTrackingTab={handleChangeTrackingTab}
           />
         </div>
       );

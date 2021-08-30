@@ -21,7 +21,7 @@ import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAltO
 import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
 import PropTypes from "prop-types";
 import Box from "@material-ui/core/Box";
-
+import SimpleLink from "../../component/SimpleLink";
 
 const useStyles = makeStyles((theme) => ({
   progress: {
@@ -88,7 +88,6 @@ export default function RestaurantCard(props) {
   const classes = useStyles();
   const [value] = React.useState(4);
   const {info}= props;
-  // console.log(info);
 
   return (
     <Card className={classes.root}>
@@ -134,38 +133,12 @@ export default function RestaurantCard(props) {
         ) : (
           <CancelIcon color="error" />
         )}
-        <Button variant="outlined" size="small" color="primary">
-          VIEW MENU
-        </Button>
+        <SimpleLink  to="/restaurant">
+          <Button variant="outlined" size="small" color="primary">
+            VIEW MENU
+          </Button>
+        </SimpleLink>
       </CardActions>
     </Card>
-    // <div className={classes.root}>
-    //   <Paper className={classes.paper}>
-    //     <Grid container spacing={3} wrap="nowrap">
-    //         <Grid item>
-    //           <Avatar variant="square">
-    //             <Avatar alt="Example Alt" src={restaurant1} />
-    //           </Avatar>
-    //         </Grid>
-    //         <Grid item xs={12}>
-    //           <Rating name="read-only" value={info.Aggregate_rating} readOnly />
-    //           <Typography>{info.Aggregate_rating}</Typography>
-    //           <Typography variant="h4" gutterBottom>
-    //             {info.Locality}
-    //           </Typography>
-    //           <Typography>Address:{info.Address}</Typography>
-    //           <Box component="fieldset" mb={3} borderColor="transparent">
-    //             <Typography component="legend">Custom empty icon</Typography>
-    //           </Box>
-    //         </Grid>
-
-    //         <CardActions>
-    //           <Button variant="outlined" size="small" color="primary">
-    //             VIEW MENU
-    //           </Button>
-    //         </CardActions>
-    //     </Grid>
-    //   </Paper>
-    // </div>
   );
 }

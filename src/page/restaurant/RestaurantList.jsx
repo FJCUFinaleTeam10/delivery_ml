@@ -17,6 +17,7 @@ import { MemoryRouter, Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 
+
 const useStyles = makeStyles((theme) => ({
     root: {
         position: "relative",
@@ -108,7 +109,6 @@ export default function RestaurantList() {
                 skip: currentPage,
                 limit: limit,
             };
-            // console.log(params);
             const response = await restaurantApi.getRestaurantList(params);
             setRestaurantList(response);
         } catch (e) {
@@ -144,29 +144,6 @@ export default function RestaurantList() {
         ) : (
           <CircularLoading />
         )}
-
-        {/* <MemoryRouter initialEntries={['/inbox']} initialIndex={0}>
-                <Route>
-                    {({ location }) => {
-                        const query = new URLSearchParams(location.search);
-                        const page = parseInt(query.get('page') || '1', 10);
-                        return (
-                            <Pagination
-                                page={page}
-                                count={10}
-                                onchange={handle}
-                                renderItem={(item) => (
-                                    <PaginationItem
-                                        component={Link}
-                                        to={`/inbox${item.page === 1 ? '' : `?page=${item.page}`}`}
-                                        {...item}
-                                    />
-                                )}
-                            />
-                        );
-                    }}
-                </Route>
-            </MemoryRouter> */}
         <Pagination
           count={10}
           color="primary"

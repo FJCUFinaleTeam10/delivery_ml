@@ -267,15 +267,17 @@ function AppScaffold(props) {
                   </ListItemIcon>
                   <ListItemText primary="Car management" />
                 </ListItem>
+                <SimpleLink to="/restaurantList">
+                  <ListItem button className={classes.nested}>
+                    <ListItemIcon>
+                      <RestaurantIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Restaurant Management" />
+                  </ListItem>
+                </SimpleLink>
                 <ListItem button className={classes.nested}>
                   <ListItemIcon>
-                     <RestaurantIcon/>
-                  </ListItemIcon>
-                  <ListItemText primary="Restaurant Management" />
-                </ListItem>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <ShoppingCartIcon/>
+                    <ShoppingCartIcon />
                   </ListItemIcon>
                   <ListItemText primary="Order Management" />
                 </ListItem>

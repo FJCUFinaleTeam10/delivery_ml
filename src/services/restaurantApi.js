@@ -5,7 +5,7 @@ const restaurantApi = {
     return axiosClient.post(url, { params });
   },
   getRestaurantList: (params) => {
-    const url = "/restaurant/getRestaurantList/";
+    const url = "/restaurant/getrestaurantlist/";
     return axiosClient.post(url, { params });
   },
   getMenutList: (params) => {
