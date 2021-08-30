@@ -88,8 +88,6 @@ export default function Home() {
     };
     getRestaurantBaseOnCity();
     getDriverBaseOnCity();
-    console.log(driverList);
-    console.log(restaurantList);
   }, [selectedCity]);
 
   useEffect(() =>{
@@ -115,7 +113,7 @@ const handleChangeCity = (e)=>{
             label="Select city"
             value={selectedCity.City}
             onChange={handleChangeCity}
-            helperText="Please select your currency"
+            helperText="Please select your city"
           >
             {cityList.map((city) => (
               <MenuItem key={city.id} value={city.City}>

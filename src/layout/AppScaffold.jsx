@@ -1,6 +1,14 @@
 import React from "react";
 import Gear from '../asset/images/gear.jpg';
 import clsx from "clsx";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
+import Collapse from "@material-ui/core/Collapse";
+import StarBorder from "@material-ui/icons/StarBorder";
+import StorageIcon from "@material-ui/icons/Storage";
+import CommuteIcon from "@material-ui/icons/Commute";
+import RestaurantIcon from "@material-ui/icons/Restaurant";
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import {
   AppBar,
   IconButton,
@@ -40,7 +48,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   menuButton: {
-    marginleft:36,
+    marginleft: 36,
   },
   expanded: {
     flexGrow: 1,
@@ -54,6 +62,9 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
+  },
+  nested: {
+    paddingLeft: theme.spacing(4),
   },
   appBarShift: {
     marginLeft: drawerWidth,
@@ -144,6 +155,7 @@ const useStyles = makeStyles((theme) => ({
 function AppScaffold(props) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [openBasic, setOpenBasic] = useState(false);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -152,7 +164,9 @@ function AppScaffold(props) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+  const handleBasic = () => {
+      setOpenBasic(!openBasic);
+  };
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -167,10 +181,10 @@ function AppScaffold(props) {
             edge="start"
             color="inherit"
             aria-label="Menu"
-            onClick={open ? handleDrawerClose : handleDrawerOpen}
+            onClick={openBasic ? handleDrawerClose : handleDrawerOpen}
             className={clsx(classes.menuButton)}
           >
-            {open ? <CloseOutlined /> : <MenuOutlined />}
+            {openBasic ? <CloseOutlined /> : <MenuOutlined />}
             <Typography variant="subtitle1" color="white">
               {open ? "Collapse" : "Expand"}
             </Typography>
@@ -210,7 +224,7 @@ function AppScaffold(props) {
         <div
           className={clsx(classes.list, classes.fullList)}
           role="presentation"
-          onClick={handleDrawerClose}
+          // onClick={handleDrawerClose}
           onKeyDown={handleDrawerClose}
         >
           <Box>
@@ -225,45 +239,49 @@ function AppScaffold(props) {
           <Divider />
           <List>
             <Tooltip title="Statistics" dir="right" arrow placement="right">
-              <SimpleLink to="/dashboard/statistic">
-                <ListItem className={classes.listItem} button>
-                  <ListItemIcon>
-                    <Dashboard />
-                  </ListItemIcon>
-                  <ListItemText primary="Statistics" />
-                </ListItem>
-              </SimpleLink>
+              <ListItem className={classes.listItem} button>
+                <ListItemIcon>
+                  <Dashboard />
+                </ListItemIcon>
+                <ListItemText primary="Statistics" />
+              </ListItem>
             </Tooltip>
-            <Tooltip title="Quizzes" arrow placement="right">
-              <SimpleLink to="/dashboard/quizzes">
-                <ListItem className={classes.listItem} button>
-                  <ListItemIcon>
-                    <QuestionAnswer />
-                  </ListItemIcon>
-                  <ListItemText primary="Quizzes" />
-                </ListItem>
-              </SimpleLink>
+            <Tooltip title="basic" dir="right" arrow placement="right">
+              <ListItem
+                className={classes.listItem}
+                button
+                onClick={handleBasic}
+              >
+                <ListItemIcon>
+                  <StorageIcon />
+                </ListItemIcon>
+                <ListItemText primary="Basic Manger" />
+                {openBasic ? <ExpandLess /> : <ExpandMore />}
+              </ListItem>
             </Tooltip>
-            <Tooltip title="Tests" arrow placement="right">
-              <SimpleLink to="/dashboard/tests">
-                <ListItem className={classes.listItem} button>
+            <Collapse in={openBasic} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem button className={classes.nested}>
                   <ListItemIcon>
-                    <DoneAll />
+                    <CommuteIcon />
                   </ListItemIcon>
-                  <ListItemText primary="Tests" />
+                  <ListItemText primary="Car management" />
                 </ListItem>
-              </SimpleLink>
-            </Tooltip>
-            <Tooltip title="Documents" arrow placement="right">
-              <SimpleLink to="/dashboard/documents">
-                <ListItem className={classes.listItem} button>
+                <ListItem button className={classes.nested}>
                   <ListItemIcon>
-                    <LibraryBooks />
+                     <RestaurantIcon/>
                   </ListItemIcon>
-                  <ListItemText primary="Documents" />
+                  <ListItemText primary="Restaurant Management" />
                 </ListItem>
-              </SimpleLink>
-            </Tooltip>
+                <ListItem button className={classes.nested}>
+                  <ListItemIcon>
+                    <ShoppingCartIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="Order Management" />
+                </ListItem>
+              </List>
+            </Collapse>
+
             <Tooltip title="Profile" arrow placement="right">
               <SimpleLink to="/me">
                 <ListItem className={classes.listItem} button>
