@@ -11,6 +11,10 @@ const orderApi = {
   baseonrestaurant: (params) => {
       const url = "/menu/baseonrestaurant/";
       return axiosClient.post(url, params);
+  },
+  getRestaurant: (params) => {
+    const url = "/restaurant/getrestaurant/";
+    return axiosClient.post(url, params);
   }
 };
 

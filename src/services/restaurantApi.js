@@ -16,5 +16,9 @@ const restaurantApi = {
     const url = `/restaurant/getrestaurantbaseoncity/`;
     return axiosClient.post(url, { params });
   },
+  getRestaurantBaseOnId: (params) => {
+    const url = `/restaurant/getrestaurantbaseonid/`;
+    return axiosClient.post(url, { params });
+  },
 };
 export default restaurantApi;

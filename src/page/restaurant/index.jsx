@@ -97,9 +97,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.getContrastText(deepOrange[500]),
     backgroundColor: deepOrange[500],
   },
-  margin: {
-    marginLeft: "300px",
-  },
   MenuBackground: {
     background: "#33cbb7",
   },
@@ -141,6 +138,11 @@ const useStyles = makeStyles((theme) => ({
     overflow: "auto",
     maxHeight: 300,
   },
+  section: {
+    width: "100%",
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
 }));
 
 
@@ -152,36 +154,35 @@ export default function StickyHeadTable() {
   const [currentPage, setCurrentPage] = React.useState(0);
   const [menus, setMenus] = React.useState([]);
   const [currentSelected, setCurrentSelected] = React.useState([]);
-  const [restaurantList,setRestaurantList] = useState([]);
   const [currentRestaurant, setCurrentRestaurant] = useState(null);
-  const [snackPack, setSnackPack] = React.useState([]);
-  const [open, setOpen] = React.useState(true);
-  const [messageInfo, setMessageInfo] = React.useState(undefined);
   const urlparams = useParams();
-  console.log(urlparams.id);
+  const [currentSections,setCurrentSections] = useState(0);
+  const currentRestaurantId = parseInt(JSON.parse(JSON.stringify(urlparams.id)));
+
   useEffect(() => {
-        setCurrentRestaurant(JSON.stringify(urlparams.id));
+        fetch_restaurant_baseon_id();
         fetch_order_list();
     }, []);
-  useEffect(() => {
-    
-    setCurrentRestaurant(restaurantList[0]);
-  }, [restaurantList]);
 
-  useEffect(() => {
-    fetch_menu_baseon_restaurant();
-  }, [currentRestaurant]);
+    useEffect(() => {
+      console.log(menus[currentSections]);
+    }, [currentSections]);
+    useEffect(() => {
+       console.log(currentRestaurant);
+    }, [currentRestaurant]);
 
-  const fetch_menu_baseon_restaurant = async () => {
+    const  handleTouchTap=(id)=>{
+      console.log(id);
+      setCurrentSections(id);
+   }
+
+  const fetch_restaurant_baseon_id =  async ()=>{
     const params = {
-      restId: currentRestaurant,
+      restId: currentRestaurantId,
     };
-    const response = await menuApi.baseonrestaurant(params);
-    setMenus(response);
-    console.log(response);
+    const response = await restaurantApi.getRestaurantBaseOnId(params);
+    setCurrentRestaurant(response);
   };
-
-
   const handleAddItem = (item) => {
     const index = currentSelected.findIndex((x) => x.info.id === item.id);
     console.log(index);
@@ -192,16 +193,6 @@ export default function StickyHeadTable() {
       currentSelected[index].amount++;
     }
   };
-    const handleClose = (event, reason) => {
-      if (reason === "clickaway") {
-        return;
-      }
-      setOpen(false);
-    };
-
-    const handleExited = () => {
-      setMessageInfo(undefined);
-    };
 
   const handleDeleteItem = (item) => {
      const index = currentSelected.findIndex((x) => x.info.id === item.id);
@@ -215,6 +206,7 @@ export default function StickyHeadTable() {
   };
 
   const handleChangePage = (event, newPage) => {
+
   };
 
   const handleChangeRowsPerPage = (event) => {
@@ -227,55 +219,31 @@ export default function StickyHeadTable() {
       const params = {
         skip: currentPage,
         limit: rowsPerPage,
+        restId: currentRestaurantId,
       };
-      const response = await restaurantApi.getRestaurantList(params);
-      setRestaurantList(response);
-      handleClick("Success");
+      const response = await restaurantApi.getMenutList(params);
+      setMenus(response);
     } catch (e) {
       console.log(e);
-      handleClick(String(e));
+
     }
-  };
-
-  const fetch_restaurant_list = async () => {
-      try {
-        const params = {
-          skip: currentPage,
-          limit: rowsPerPage,
-        };
-        const response = await restaurantApi.getMenutList(params);
-        setMenus(response);
-
-      } catch (e) {
-        console.log(e);
-      }
-  };
-  const handleClick = (message) => () => {
-      setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
   };
 
   const handleOrder = async () => {
     try {
-      console.log(process.env);
         const params = {
-            longitude: restaurantList[currentRestaurant].Longitude,
-            latitude: restaurantList[currentRestaurant].Latitude,
+            longitude: currentRestaurant.Longitude,
+            latitude:  currentRestaurant.Latitude,
             requestTime: formatDate(Date.now()),
-            restaurantId: restaurantList[currentRestaurant].id,
+            restaurantId: currentRestaurant.id,
           };
-        console.log(params);
         const respone = await orderApi.createOrder(params);
-      handleClick("success");
         return respone;
-
       } catch (e) {
          console.log(e);
-         handleClick(e.message);
+      
     }
   };
-  const handleMenuRestaurantChange = (event) => {
-         setCurrentRestaurant(event.target.value);
-  }
   const render_shopping_cart = () => {
       return (
         <List className={classes.list} subheader={<li />}>
@@ -292,66 +260,36 @@ export default function StickyHeadTable() {
         </List>
       );
   }
-    const renderRestaurantsList=() => {
+    const render_section = () => {
       return (
-        <form className={classes.root} noValidate autoComplete="off">
-          <TextField
-            id="standard-select-currency"
-            select
-            label="Restaurant"
-            value={currentRestaurant}
-            onChange={handleMenuRestaurantChange}
-            helperText="Please select your Restaurant"
+        <Paper>
+          <List
+            className={classes.section}
+            subheader={<ListSubheader>Sections</ListSubheader>}
           >
-            {restaurantList.map((restaurant, index) => (
-              <MenuItem key={restaurant.id} value={index}>
-                {restaurant.Restaurant_Name}
-              </MenuItem>
+            {menus.map((section, index) => (
+              <ListItem
+                key={section.id}
+                button
+                onClick={() => handleTouchTap(index)}
+              >
+                <ListItemAvatar>
+                  <ListItemText primary={`${section.section}`} />
+                </ListItemAvatar>
+              </ListItem>
             ))}
-          </TextField>
-        </form>
+          </List>
+        </Paper>
       );
-    }
+    };
+
 
 
   return (
     <div>
-      <Snackbar
-        key={messageInfo ? messageInfo.key : undefined}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        onExited={handleExited}
-        message={messageInfo ? messageInfo.message : undefined}
-      />
       <Grid container spacing={3}>
         <Grid item xs>
-          {renderRestaurantsList()}
-          <List
-            component="nav"
-            className={classes.BackToMenuItem}
-            aria-label="contacts"
-          >
-            <ListItem button>
-              <ListItemText primary="Starters" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Main Courses" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Beef" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Desserts" />
-            </ListItem>
-            <ListItem button>
-              <ListItemText primary="Drinks" />
-            </ListItem>
-          </List>
+          {render_section()}
         </Grid>
 
         <Grid item xs={6}>
@@ -365,7 +303,7 @@ export default function StickyHeadTable() {
               </Typography>
             </CardContent>
             <Box p={2}>
-              <Typography variant="h6">STARTERS</Typography>
+              <Typography variant="h6">{menus[currentSections]?.section}</Typography>
               <Typography variant="subtitle2">
                 Te ferri iisque aliquando pro, posse nonumes efficiantur in cum.
                 Sensibus reprimique eu pro. Fuisset mentitum deleniti sit ea.
@@ -389,7 +327,7 @@ export default function StickyHeadTable() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {menus.map((menu) => {
+                  {menus[currentSections]?.menu.map((menu) => {
                     return (
                       <TableRow
                         hover
@@ -398,7 +336,7 @@ export default function StickyHeadTable() {
                         key={menu.id}
                       >
                         <TableCell key="name">
-                          {menu.name}
+                          {menu.item}
                           {menu.dsc}
                           <Avatar variant="square" className={classes.square}>
                             <img src={menu.img} alt="Italian Trulli" />
