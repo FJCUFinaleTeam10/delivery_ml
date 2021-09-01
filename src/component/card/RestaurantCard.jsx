@@ -100,7 +100,7 @@ export default function RestaurantCard(props) {
         <Rating name="read-only" value={info.Aggregate_rating} readOnly />
         <Typography>{info.Aggregate_rating}</Typography>
         <Typography variant="h4" gutterBottom>
-          {info.Locality}
+          {info.Restaurant_Name}
         </Typography>
         <Typography>Address:{info.Address}</Typography>
         <Box component="fieldset" mb={3} borderColor="transparent">
@@ -133,7 +133,7 @@ export default function RestaurantCard(props) {
         ) : (
           <CancelIcon color="error" />
         )}
-        <SimpleLink  to="/restaurant">
+        <SimpleLink to={`/restaurant/${info.Restaurant_ID}`}>
           <Button variant="outlined" size="small" color="primary">
             VIEW MENU
           </Button>

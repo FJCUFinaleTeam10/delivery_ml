@@ -1,4 +1,5 @@
 import React from "react";
+import { useHistory, useParams } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 import AppScaffold from "./layout/AppScaffold";
@@ -29,8 +30,8 @@ export default function App(props) {
               <Link to="/">Home</Link>
             </Typography>
           </Route>
-          <Route path="/restaurant" exact>
-            <Restaurants />
+          <Route path="/restaurant/:id" exact>
+            <Restaurants/>
           </Route>
           <Route path="/" exact>
             <Home />

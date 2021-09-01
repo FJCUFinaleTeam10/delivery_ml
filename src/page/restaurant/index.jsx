@@ -34,6 +34,8 @@ import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import { useParams } from "react-router-dom";
+import menuApi from "../../services/menuApi";
 
 const columns = [
   { id: "name", label: "name", minWidth: 170 },
@@ -152,9 +154,33 @@ export default function StickyHeadTable() {
   const [currentSelected, setCurrentSelected] = React.useState([]);
   const [restaurantList,setRestaurantList] = useState([]);
   const [currentRestaurant, setCurrentRestaurant] = useState(null);
-   const [snackPack, setSnackPack] = React.useState([]);
-   const [open, setOpen] = React.useState(true);
-   const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const [snackPack, setSnackPack] = React.useState([]);
+  const [open, setOpen] = React.useState(true);
+  const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const urlparams = useParams();
+  console.log(urlparams.id);
+  useEffect(() => {
+        setCurrentRestaurant(JSON.stringify(urlparams.id));
+        fetch_order_list();
+    }, []);
+  useEffect(() => {
+    
+    setCurrentRestaurant(restaurantList[0]);
+  }, [restaurantList]);
+
+  useEffect(() => {
+    fetch_menu_baseon_restaurant();
+  }, [currentRestaurant]);
+
+  const fetch_menu_baseon_restaurant = async () => {
+    const params = {
+      restId: currentRestaurant,
+    };
+    const response = await menuApi.baseonrestaurant(params);
+    setMenus(response);
+    console.log(response);
+  };
+
 
   const handleAddItem = (item) => {
     const index = currentSelected.findIndex((x) => x.info.id === item.id);
@@ -195,23 +221,6 @@ export default function StickyHeadTable() {
     setRowsPerPage(+event.target.value);
 
   };
-  useEffect(() => {
-    setInterval(() => {
-      fetch_restaurant_list();
-      fetch_order_list();
-    }, 5000); // 5s
-  }, []);
-  useEffect(() => {
-     if (snackPack.length && !messageInfo) {
-       // Set a new snack when we don't have an active one
-       setMessageInfo({ ...snackPack[0] });
-       setSnackPack((prev) => prev.slice(1));
-       setOpen(true);
-     } else if (snackPack.length && messageInfo && open) {
-       // Close an active snack when a new one is added
-       setOpen(false);
-     }
-   }, [snackPack, messageInfo, open]);
 
   const fetch_order_list = async () => {
     try {
