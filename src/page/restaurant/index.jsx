@@ -40,6 +40,7 @@ import menuApi from "../../services/menuApi";
 const columns = [
   { id: "name", label: "name", minWidth: 170 },
   { id: "price", label: "Price", minWidth: 100 },
+  { id: "des", label: "Description", minWidth: 100 },
   {
     id: "Order",
     label: "Order",
@@ -109,10 +110,14 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
   },
   OrderCart: {
-    width: "50%",
     marginRight: "100px",
     maxWidth: 159,
     backgroundColor: theme.palette.background.paper,
+    width: "100%",
+    maxWidth: 360,
+    position: "relative",
+    overflow: "auto",
+    maxHeight: 300,
   },
   Order_root: {
     display: "flex",
@@ -129,14 +134,6 @@ const useStyles = makeStyles((theme) => ({
   ul: {
     backgroundColor: "inherit",
     padding: 0,
-  },
-  list: {
-    width: "100%",
-    maxWidth: 360,
-    backgroundColor: theme.palette.background.paper,
-    position: "relative",
-    overflow: "auto",
-    maxHeight: 300,
   },
   section: {
     width: "100%",
@@ -158,6 +155,7 @@ export default function StickyHeadTable() {
   const urlparams = useParams();
   const [currentSections,setCurrentSections] = useState(0);
   const currentRestaurantId = parseInt(JSON.parse(JSON.stringify(urlparams.id)));
+  const [totalPrice,setTotalPrice] = useState(0.0);
 
   useEffect(() => {
         fetch_restaurant_baseon_id();
@@ -165,46 +163,56 @@ export default function StickyHeadTable() {
     }, []);
 
     useEffect(() => {
-      console.log(menus[currentSections]);
+      // console.log(menus[currentSections]);
     }, [currentSections]);
     useEffect(() => {
-       console.log(currentRestaurant);
+      //  console.log(currentRestaurant);
     }, [currentRestaurant]);
+    useEffect(() => {
+      // console.log(currentSelected);
+      caculate();
+    }, [currentSelected]);
 
     const  handleTouchTap=(id)=>{
       console.log(id);
       setCurrentSections(id);
    }
+       useEffect(() => {
+         console.log(totalPrice);
+       }, [totalPrice]);
 
   const fetch_restaurant_baseon_id =  async ()=>{
     const params = {
       restId: currentRestaurantId,
     };
     const response = await restaurantApi.getRestaurantBaseOnId(params);
-    setCurrentRestaurant(response);
+    setCurrentRestaurant(response[0]);
   };
-  const handleAddItem = (item) => {
-    const index = currentSelected.findIndex((x) => x.info.id === item.id);
-    console.log(index);
-    if (index <0) {
-      currentSelected.push({info:item,amount:0});
+  const handleAddItem = (currentItem) => {
+    let foundIndex =  [...currentSelected].map(e=>e.info.item).indexOf(currentItem.item);
+    if (foundIndex <0) {
+      setCurrentSelected(currentSelected => [...currentSelected,{ info: currentItem, amount: 1 }]);
     }
     else{
-      currentSelected[index].amount++;
+      let cloneArray = [...currentSelected];
+      cloneArray[foundIndex].amount++;
+      setCurrentSelected(cloneArray);
     }
   };
 
-  const handleDeleteItem = (item) => {
-     const index = currentSelected.findIndex((x) => x.info.id === item.id);
-     console.log(index);
-     if (index === 0) {
-             currentSelected.splice(index, 1); 
-     } else {
-       currentSelected[index].amount--;
+  const handleDeleteItem = (currentItem) => {
+     let foundIndex =  [...currentSelected].map(e=>e.info.item).indexOf(currentItem.item);
+     if(foundIndex>=0){
+             if (currentSelected[foundIndex] === 0) {
+               let cloneArray = [...currentSelected];
+               setCurrentSelected(cloneArray.splice(currentItem, 1));
+             } else {
+               let cloneArray = [...currentSelected];
+               cloneArray[foundIndex].amount--;
+               setCurrentSelected(cloneArray);
+             }
      }
-     console.log(currentSelected[index]);
   };
-
   const handleChangePage = (event, newPage) => {
 
   };
@@ -244,17 +252,27 @@ export default function StickyHeadTable() {
       
     }
   };
+  const caculate =async() => {
+    console.log(currentSelected);
+    const reducer = (accumulator, currentValue) =>
+      accumulator +
+      parseFloat(currentValue.info.price.replace("$", "")) *
+        currentValue.amount;
+    const result = currentSelected.reduce(reducer, 0.0);
+    setTotalPrice(result);
+  }
   const render_shopping_cart = () => {
       return (
-        <List className={classes.list} subheader={<li />}>
+        <List className={classes.OrderCart} subheader={<li />}>
           {currentSelected.map((item) => (
             <ListItem key={`item-${item}`}>
               <ListItemAvatar>
                 <Avatar variant="square" className={classes.square}>
                   <img src={item.info.img} alt="Italian Trulli" />
                 </Avatar>
-                <ListItemText primary={`${item.info.name}`} />
+                <ListItemText primary={`${item.info.item}`} />
               </ListItemAvatar>
+              <ListItemText primary={`${item.amount}`} />
             </ListItem>
           ))}
         </List>
@@ -303,7 +321,9 @@ export default function StickyHeadTable() {
               </Typography>
             </CardContent>
             <Box p={2}>
-              <Typography variant="h6">{menus[currentSections]?.section}</Typography>
+              <Typography variant="h6">
+                {menus[currentSections]?.section}
+              </Typography>
               <Typography variant="subtitle2">
                 Te ferri iisque aliquando pro, posse nonumes efficiantur in cum.
                 Sensibus reprimique eu pro. Fuisset mentitum deleniti sit ea.
@@ -337,12 +357,12 @@ export default function StickyHeadTable() {
                       >
                         <TableCell key="name">
                           {menu.item}
-                          {menu.dsc}
                           <Avatar variant="square" className={classes.square}>
                             <img src={menu.img} alt="Italian Trulli" />
                           </Avatar>
                         </TableCell>
                         <TableCell key="price">{menu.price}</TableCell>
+                        <TableCell key="des">{menu.description}</TableCell>
                         <TableCell align="right">
                           <ButtonGroup>
                             <Button
@@ -400,13 +420,22 @@ export default function StickyHeadTable() {
                 {render_shopping_cart()}
               </CardContent>
               <CardActions>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleOrder}
-                >
-                  Order Now
-                </Button>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Typography variant="h4" component="h2" gutterBottom>
+                      {`Price:${totalPrice}$`}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleOrder}
+                    >
+                      Order Now
+                    </Button>
+                  </Grid>
+                </Grid>
               </CardActions>
             </Card>
           </paper>

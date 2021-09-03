@@ -195,7 +195,7 @@ function AppScaffold(props) {
             <SearchBox />
           </div>
           <NavLink to="/home">Home</NavLink>
-          <NavLink to="/restaurant">Restaurants</NavLink>
+          <NavLink to="/restaurantlist">Restaurants</NavLink>
           <Avatar src="https://avatars.githubusercontent.com/u/52750799?v=4" />
         </Toolbar>
       </AppBar>
@@ -267,7 +267,7 @@ function AppScaffold(props) {
                   </ListItemIcon>
                   <ListItemText primary="Car management" />
                 </ListItem>
-                <SimpleLink to="/restaurantList">
+                <SimpleLink to="/restaurantlist">
                   <ListItem button className={classes.nested}>
                     <ListItemIcon>
                       <RestaurantIcon />

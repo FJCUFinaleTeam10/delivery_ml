@@ -21,7 +21,7 @@ export default function App(props) {
           <Route path="/login" exact>
             <Login />
           </Route>
-          <Route path="/restaurantList" exact>
+          <Route path="/restaurantlist" exact>
             <RestaurantList />
           </Route>
           <Route path="/error" exact>
