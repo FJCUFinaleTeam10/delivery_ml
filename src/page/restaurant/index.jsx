@@ -36,7 +36,8 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
 import { useParams } from "react-router-dom";
 import menuApi from "../../services/menuApi";
-
+import Modal from "@material-ui/core/Modal";
+import OrderCard from "../../component/card/OrderCard";
 const columns = [
   { id: "name", label: "name", minWidth: 170 },
   { id: "price", label: "Price", minWidth: 100 },
@@ -156,7 +157,7 @@ export default function StickyHeadTable() {
   const [currentSections,setCurrentSections] = useState(0);
   const currentRestaurantId = parseInt(JSON.parse(JSON.stringify(urlparams.id)));
   const [totalPrice,setTotalPrice] = useState(0.0);
-
+  const [openOrdeModal, setOpenOrderModal] = useState(false);
   useEffect(() => {
         fetch_restaurant_baseon_id();
         fetch_order_list();
@@ -180,7 +181,13 @@ export default function StickyHeadTable() {
        useEffect(() => {
          console.log(totalPrice);
        }, [totalPrice]);
+    function handleOpen(){
+       setOpenOrderModal(true);
+    };
 
+    function handleClose(){
+       setOpenOrderModal(false);
+    };
   const fetch_restaurant_baseon_id =  async ()=>{
     const params = {
       restId: currentRestaurantId,
@@ -223,6 +230,7 @@ export default function StickyHeadTable() {
   };
 
   const fetch_order_list = async () => {
+    
     try {
       const params = {
         skip: currentPage,
@@ -238,6 +246,7 @@ export default function StickyHeadTable() {
   };
 
   const handleOrder = async () => {
+    
     try {
         const params = {
             longitude: currentRestaurant.Longitude,
@@ -249,7 +258,6 @@ export default function StickyHeadTable() {
         return respone;
       } catch (e) {
          console.log(e);
-      
     }
   };
   const caculate =async() => {
@@ -430,10 +438,22 @@ export default function StickyHeadTable() {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleOrder}
+                      onClick={handleOpen}
                     >
                       Order Now
                     </Button>
+                    <Modal
+                      open={openOrdeModal}
+                      onClose={handleClose}
+                      aria-labelledby="simple-modal-title"
+                      aria-describedby="simple-modal-description"
+                    >
+                      <OrderCard
+                        className={classes.modal}
+                        confirm={handleOrder}
+                        cancel={handleClose}
+                      />
+                    </Modal>
                   </Grid>
                 </Grid>
               </CardActions>
