@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useMemo,useRef,createRef} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
@@ -31,13 +31,10 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import orderApi from "../../services/orderApi";
 import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
 import { useParams } from "react-router-dom";
 import menuApi from "../../services/menuApi";
 import Modal from "@material-ui/core/Modal";
-import OrderCard from "../../component/card/OrderCard";
+import Map from "../../component/Map";
 const columns = [
   { id: "name", label: "name", minWidth: 170 },
   { id: "price", label: "Price", minWidth: 100 },
@@ -88,6 +85,25 @@ const columns = [
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
+  },
+  root: {
+    margin: theme.spacing(1),
+    width: "25ch",
+  },
+  map: {
+    height: `25vh`,
+    width: `25vh`,
+  },
+  modal: {
+    top: `50%`,
+    left: `50%`,
+    transform: `translate(-50%, -50%)`,
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(5, 5, 5),
   },
   MenuRoot: {
     marginLeft: "0px",
@@ -147,6 +163,7 @@ const useStyles = makeStyles((theme) => ({
 export default function StickyHeadTable() {
 
   const classes = useStyles();
+
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [itemCount, setItemCount] = React.useState(1);
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -158,33 +175,38 @@ export default function StickyHeadTable() {
   const currentRestaurantId = parseInt(JSON.parse(JSON.stringify(urlparams.id)));
   const [totalPrice,setTotalPrice] = useState(0.0);
   const [openOrdeModal, setOpenOrderModal] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState([2.3522219, 48.856614,
+]);
+  const [zoom,setZoom] = useState(10);
+  const [draggable, setDraggable] = useState(true);
+  let   mapRef = createRef();
   useEffect(() => {
         fetch_restaurant_baseon_id();
         fetch_order_list();
     }, []);
 
     useEffect(() => {
-      // console.log(menus[currentSections]);
-    }, [currentSections]);
-    useEffect(() => {
-      //  console.log(currentRestaurant);
+      setCurrentPosition([parseFloat(currentRestaurant?.Latitude),parseFloat(currentRestaurant?.Longitude),
+      ]);
     }, [currentRestaurant]);
+
     useEffect(() => {
-      // console.log(currentSelected);
       caculate();
     }, [currentSelected]);
+
+        useEffect(() => {
+          console.log("hit");
+          console.log(currentPosition);
+        }, [currentPosition]);
 
     const  handleTouchTap=(id)=>{
       console.log(id);
       setCurrentSections(id);
    }
-       useEffect(() => {
-         console.log(totalPrice);
-       }, [totalPrice]);
+    
     function handleOpen(){
        setOpenOrderModal(true);
     };
-
     function handleClose(){
        setOpenOrderModal(false);
     };
@@ -220,14 +242,11 @@ export default function StickyHeadTable() {
              }
      }
   };
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (event, newPage) => {};
 
-  };
+  const handleChangeRowsPerPage = (event) => {setRowsPerPage(+event.target.value);};
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
 
-  };
 
   const fetch_order_list = async () => {
     
@@ -261,14 +280,115 @@ export default function StickyHeadTable() {
     }
   };
   const caculate =async() => {
-    console.log(currentSelected);
-    const reducer = (accumulator, currentValue) =>
-      accumulator +
-      parseFloat(currentValue.info.price.replace("$", "")) *
-        currentValue.amount;
+    const reducer = (accumulator, currentValue) =>accumulator +parseFloat(currentValue.info.price.replace("$", "")) *currentValue.amount;
     const result = currentSelected.reduce(reducer, 0.0);
     setTotalPrice(result);
   }
+
+  const renderModal = (
+    <Paper className={classes.modal}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="First Name"
+              variant="outlined"
+            />
+          </form>
+        </Grid>
+        <Grid item xs={12}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Last Name"
+              variant="outlined"
+            />
+          </form>
+        </Grid>
+        <Grid item xs={12}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Telephone/mobile"
+              variant="outlined"
+            />
+          </form>
+        </Grid>
+        <Grid item xs={5}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Latitude"
+              variant="outlined"
+              value={currentPosition[0]}
+            />
+          </form>
+        </Grid>
+        <Grid item xs={5}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Longitude"
+              variant="outlined"
+              value={currentPosition[1]}
+            />
+          </form>
+        </Grid>
+        <Grid item xs={12}>
+          <Map
+            text={{
+              features: [{ geometry: { coordinates: currentPosition } }],
+              query: "new location",
+            }}
+            currentPosition={currentPosition}
+            setCurrentPosition={setCurrentPosition}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Email"
+              variant="outlined"
+            />
+          </form>
+        </Grid>
+        <Grid item xs={12}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="outlined-multiline-static"
+              multiline
+              label="Description"
+              variant="outlined"
+              rows={5}
+            />
+          </form>
+        </Grid>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Button variant="contained" color="primary" onClick={handleOrder}>
+              Confirm
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button variant="contained" onClick={handleClose}>
+              Cancel
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+    </Paper>
+  );
   const render_shopping_cart = () => {
       return (
         <List className={classes.OrderCart} subheader={<li />}>
@@ -309,8 +429,6 @@ export default function StickyHeadTable() {
       );
     };
 
-
-
   return (
     <div>
       <Grid container spacing={3}>
@@ -338,7 +456,6 @@ export default function StickyHeadTable() {
               </Typography>
               <Divider light />
             </Box>
-
             <TableContainer className={classes.container}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -374,19 +491,13 @@ export default function StickyHeadTable() {
                         <TableCell align="right">
                           <ButtonGroup>
                             <Button
-                              onClick={() => {
-                                handleDeleteItem(menu);
-                              }}
+                              onClick={() => {handleDeleteItem(menu);}}
                             >
-                              {" "}
                               <RemoveIcon fontSize="small" />
                             </Button>
                             <Button
-                              onClick={() => {
-                                handleAddItem(menu);
-                              }}
+                              onClick={() => {handleAddItem(menu);}}
                             >
-                              {" "}
                               <AddIcon fontSize="small" />
                             </Button>
                           </ButtonGroup>
@@ -448,11 +559,7 @@ export default function StickyHeadTable() {
                       aria-labelledby="simple-modal-title"
                       aria-describedby="simple-modal-description"
                     >
-                      <OrderCard
-                        className={classes.modal}
-                        confirm={handleOrder}
-                        cancel={handleClose}
-                      />
+                      {renderModal}
                     </Modal>
                   </Grid>
                 </Grid>

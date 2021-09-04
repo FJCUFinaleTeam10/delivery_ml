@@ -13,6 +13,7 @@ export default function Order() {
   
   const [restaurantList,setRestaurantList] = useState([]);
   const [currentRestaurant,setCurrentRestaurant] = useState(null);
+  const [currentPosition,setCurrentPosition] = useState(null);
   const classes = useStyles();
 
   useEffect(()=>{
@@ -21,7 +22,11 @@ export default function Order() {
       setCurrentRestaurant(0);
     }, 1000);
   },[]);
+  useEffect(() => {
+    setCurrentPosition([currentRestaurant.Latitude, currentRestaurant.Longitude]);
+  }, [setCurrentRestaurant]);
 
+  
   const fetch_restaurant_list= async()=>{
     try {
       const response = await restaurantApi.getAll();

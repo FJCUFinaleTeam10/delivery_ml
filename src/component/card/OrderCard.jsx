@@ -1,32 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Avatar from "@material-ui/core/Avatar";
-import restaurant1 from "../../asset/images/restaurant1.jpg";
-import Rating from "@material-ui/lab/Rating";
-import StarBorderIcon from "@material-ui/icons/StarBorder";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import CancelIcon from "@material-ui/icons/Cancel";
-import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import SentimentDissatisfiedIcon from "@material-ui/icons/SentimentDissatisfied";
-import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
-import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAltOutlined";
-import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
-import PropTypes from "prop-types";
-import Box from "@material-ui/core/Box";
-import SimpleLink from "../SimpleLink";
 import TextField from "@material-ui/core/TextField";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import AccessibilityIcon from "@material-ui/icons/Accessibility";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import manIcon from '../../asset/images/man-silhouette.svg';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
     width: "25ch",
+  },
+  map: {
+    height: `25vh`,
+    width: `25vh`,
   },
   modal: {
     top: `50%`,
@@ -41,9 +32,53 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 export default function OrderCard(props) {
   const classes = useStyles();
-  const [value] = React.useState(4);
+  const {currentPosition} = props;
+
+  const customeIcon = new L.Icon({
+    iconUrl: { manIcon },
+    iconSize: new L.Point(60, 75),
+    iconAnchor: [32, 64],
+    popupAnchor: [-3, -76],
+  });
+
+  function SetViewOnClick({ coords }) {
+    const map = useMap();
+    map.setView(coords, map.getZoom());
+
+    return null;
+  }
+  const renderMap =() => {
+    return (
+      <MapContainer
+        center={props?.currentPosition}
+        zoom={props.zoom}
+        className={classes.map}
+        onClick={props.handleUpdateCurrentPostition}
+        attributionControl={false}
+        zoomControl={false}
+      >
+        <TileLayer
+          url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          zoomControl="false"
+          maxZoom="28"
+        />
+        {props.currentPosition && (
+          <Marker
+            position={props?.currentPosition}
+            draggable={props.draggable}
+            icon={customeIcon}
+            eventHandlers={props.handleUpdateCurrentPostition}
+            ref={props.ref}
+          >
+            <SetViewOnClick coords={props?.currentPosition} />
+          </Marker>
+        )}
+      </MapContainer>
+    );
+  }
 
   return (
     <Paper className={classes.modal}>
@@ -78,6 +113,31 @@ export default function OrderCard(props) {
             />
           </form>
         </Grid>
+        <Grid item xs={5}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Latitude"
+              variant="outlined"
+              defaultValue={currentPosition[0]}
+            />
+          </form>
+        </Grid>
+        <Grid item xs={5}>
+          <form noValidate autoComplete="off">
+            <TextField
+              required
+              id="standard-required"
+              label="Longitude"
+              variant="outlined"
+              defaultValue={currentPosition[1]}
+            />
+          </form>
+        </Grid>
+        <Grid item xs={12}>
+          {renderMap()}
+        </Grid>
         <Grid item xs={12}>
           <form noValidate autoComplete="off">
             <TextField
@@ -96,20 +156,24 @@ export default function OrderCard(props) {
               multiline
               label="Description"
               variant="outlined"
-              rows={10}
+              rows={5}
             />
           </form>
         </Grid>
       </Grid>
-      <Grid item xs={4}>
-        <Button variant="contained" color="primary" onClick={props.confirm}>
-          Confirm
-        </Button>
-      </Grid>
-      <Grid item xs={4}>
-        <Button variant="contained" onClick={props.cancel}>
-          Cancel
-        </Button>
+      <Grid item xs={12}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Button variant="contained" color="primary" onClick={props.confirm}>
+              Confirm
+            </Button>
+          </Grid>
+          <Grid item xs={6}>
+            <Button variant="contained" onClick={props.cancel}>
+              Cancel
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
     </Paper>
   );
