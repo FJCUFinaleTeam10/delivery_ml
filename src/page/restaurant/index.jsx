@@ -193,7 +193,9 @@ export default function StickyHeadTable() {
 
     useEffect(() => {
       setCurrentPosition([parseFloat(currentRestaurant?.Latitude),parseFloat(currentRestaurant?.Longitude),
+        
       ]);
+      console.log(currentRestaurant);
     }, [currentRestaurant]);
 
     useEffect(() => {
@@ -274,19 +276,21 @@ export default function StickyHeadTable() {
   };
 
   const handleOrder = async () => {
-    
+    setOpenOrderModal(false);
     try {
         const params = {
           longitude: currentPosition[1],
           latitude: currentRestaurant[0],
           requestTime: formatDate(Date.now()),
-          restaurantId: currentRestaurant.id,
+          restaurantId: currentRestaurant.Restaurant_ID,
           totalPrice: totalPrice,
           firstName: firstName,
           lastName: lastName,
           email: email,
           description: description,
           telephone: telephone,
+          longitude: currentPosition[1],
+          latitude: currentPosition[0],
         };
         const respone = await orderApi.createOrder(params);
         return respone;

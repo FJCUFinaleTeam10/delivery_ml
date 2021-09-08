@@ -174,7 +174,7 @@ export default function TrackingTab(props) {
                    )}
                    {renderVehicle(
                      EmojiTransportationIcon,
-                     "got package from restaurant date:" +
+                     "restaurantId:" +
                        r.order_restaurant_carrier_restaurantId
                    )}
                    {renderVehicle(
