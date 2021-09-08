@@ -83,7 +83,10 @@ export default function LeafletMap(props) {
                 o.Longitude && (
                   <Marker
                     icon={iconOrder}
-                    position={[o.Latitude, o.Longitude]}
+                    position={[
+                      o.order_customer_Latitude,
+                      o.order_customer_Longitude,
+                    ]}
                   />
                 )
             );

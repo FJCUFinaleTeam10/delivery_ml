@@ -163,6 +163,25 @@ export default function TrackingTab(props) {
                      EmojiTransportationIcon,
                      "delivery date:" + r.order_delivered_customer_date
                    )}
+                   {renderVehicle(
+                     EmojiTransportationIcon,
+                     "requested date:" + r.order_request_time
+                   )}
+                   {renderVehicle(
+                     EmojiTransportationIcon,
+                     "got package from restaurant date:" +
+                       r.order_restaurant_carrier_date
+                   )}
+                   {renderVehicle(
+                     EmojiTransportationIcon,
+                     "got package from restaurant date:" +
+                       r.order_restaurant_carrier_restaurantId
+                   )}
+                   {renderVehicle(
+                     EmojiTransportationIcon,
+                     "order status:" + r.order_status
+                   )}
+                   order_status
                  </List>
                </Collapse>
              </div>
