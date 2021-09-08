@@ -6,6 +6,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import LocalShippingIcon from "../asset/images/truck.svg";
 import storeIcon from "../asset/images/store.png";
+import CardTravelIcon from "../asset/images/sent.svg";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
@@ -32,6 +33,7 @@ export default function LeafletMap(props) {
   const zoom = 10;
   const {restaurantList} = props;
   const {driverList} = props;
+  const {orderList} = props;
   const {centerCity} = props;
   const iconTruck = new L.Icon({
     iconUrl: LocalShippingIcon,
@@ -41,7 +43,10 @@ export default function LeafletMap(props) {
     iconUrl: storeIcon,
     iconSize: new L.Point(60, 75),
   });
-
+  const iconOrder = new L.Icon({
+    iconUrl: CardTravelIcon,
+    iconSize: new L.Point(60, 75),
+  });
 
   const renderVehicles =() =>{
     if (driverList.length>0) {
@@ -70,6 +75,20 @@ export default function LeafletMap(props) {
       }
 
     };
+        const renderOrder = () => {
+          if (restaurantList.length > 0) {
+            return orderList.map(
+              (o) =>
+                o.Latitude &&
+                o.Longitude && (
+                  <Marker
+                    icon={iconOrder}
+                    position={[o.Latitude, o.Longitude]}
+                  />
+                )
+            );
+          }
+        };
   return (
     <MapContainer
       className={classes.map}
@@ -87,6 +106,7 @@ export default function LeafletMap(props) {
       />
       {renderVehicles()}
       {renderRestaurants()}
+      {renderOrder()}
     </MapContainer>
   );
 }

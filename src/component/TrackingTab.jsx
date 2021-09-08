@@ -24,6 +24,7 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
+import CardTravelIcon from "@material-ui/icons/CardTravel";
 const useStyles = makeStyles((theme) => ({
   container: {
     width: `30%`,
@@ -48,6 +49,7 @@ export default function TrackingTab(props) {
   const classes = useStyles();
   const {restaurantList} = props;
   const {driverList} = props;
+  const {orderList} = props;
   const {selectedIndex} = props;
   const {handleClickTrackingTabItem} = props;
   const  {currentTrackingTab} = props;
@@ -98,6 +100,7 @@ export default function TrackingTab(props) {
       </List>
     );
   };
+  
   const renderRestaurantsList=() => {
      return (
        <List style={{ paddingBottom: `0` }} component="nav">
@@ -130,9 +133,45 @@ export default function TrackingTab(props) {
        </List>
      );
   }
-  const renderOrderList=() => {
+   const renderOrderList = () => {
+     return (
+       <List style={{ paddingBottom: `0` }} component="nav">
+         <div style={{ height: `300px`, overflowY: `auto` }}>
+           {orderList.map((r, i) => (
+             <div key={i}>
+               <ListItem
+                 button
+                 onClick={(e) => handleClickTrackingTabItem(e, i)}
+               >
+                 <ListItemIcon>
+                   <CardTravelIcon />
+                 </ListItemIcon>
+                 <ListItemText primary={r.id} />
+                 {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
+               </ListItem>
+               <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
+                 <List component="div" disablePadding>
+                   {renderVehicle(
+                     ThumbUpIcon,
+                     "order approved at:" + r.order_approved_at
+                   )}
+                   {renderVehicle(
+                     MenuBookIcon,
+                     "Latitude:" + r.order_customer_Latitude
+                   )}
+                   {renderVehicle(
+                     EmojiTransportationIcon,
+                     "delivery date:" + r.order_delivered_customer_date
+                   )}
+                 </List>
+               </Collapse>
+             </div>
+           ))}
+         </div>
+       </List>
+     );
+   };
 
-  };
 
   return (
     <div className={classes.container}>

@@ -7,6 +7,10 @@ const orderApi={
   createOrder:(params) => {
     const url = "/order/createOrder/";
     return axiosClient.post(url,params);
+  },
+  getOrderBaseOnCity: (params) => {
+    const url = "/order/baseoncity/";
+    return axiosClient.post(url, { params });
   }
 }
 

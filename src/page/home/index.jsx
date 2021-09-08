@@ -19,6 +19,7 @@ import "../../component/TrackingTab";
 import TrackingTab from "../../component/TrackingTab";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import orderApi from "../../services/orderApi.js";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
@@ -38,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
     Latitude: 51.505,
     Longitude: -0.09,
   };
-  // const center = [51.505, -0.09];
   const zoom = 13;
 export default function Home() {
 
   const [restaurantList,setRestaurantList] = useState([]);
   const [driverList, setDriverList] = useState([]);
+  const [orderList,setOrderList] = useState([]);
   const classes = useStyles();
   const [cityList, setCityList] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -65,12 +66,12 @@ export default function Home() {
   useEffect(() => {
     setSelectedCity(cityList[0]);
   }, [cityList]);
-  useEffect(() => {
-    console.log(currentTrackingTab);
-  }, [currentTrackingTab]);
+    useEffect(() => {
+      console.log(orderList);
+    }, [orderList]);
 
   useEffect(() => {
-     async function getRestaurantBaseOnCity(){
+    async function getRestaurantBaseOnCity() {
       try {
         const params = {
           city: selectedCity.City,
@@ -80,8 +81,8 @@ export default function Home() {
       } catch (e) {
         console.log(e);
       }
-    };
-     async function getDriverBaseOnCity(){
+    }
+    async function getDriverBaseOnCity() {
       try {
         const params = {
           city: selectedCity.City,
@@ -91,15 +92,23 @@ export default function Home() {
       } catch (e) {
         console.log(e);
       }
-    };
+    }
+    async function getOrderBaseOnCity() {
+      try {
+        const params = {
+          city: selectedCity.City,
+        };
+        const response = await orderApi.getOrderBaseOnCity(params);
+        setOrderList(response);
+      } catch (e) {
+        console.log(e);
+      }
+    }
     getRestaurantBaseOnCity();
     getDriverBaseOnCity();
+    getOrderBaseOnCity();
   }, [selectedCity]);
 
-  useEffect(() =>{
-    console.log(driverList);
-    console.log(restaurantList)
-  },driverList,restaurantList);
 
 const handleChangeCity = (e)=>{
     var filterCity = cityList.filter(function (el) {
@@ -140,9 +149,11 @@ const handleChangeCity = (e)=>{
           <LeafletMap
             driverList={driverList}
             restaurantList={restaurantList}
+            orderList={orderList}
             centerCity={selectedCity}
           />
           <TrackingTab
+            orderList={orderList}
             driverList={driverList}
             restaurantList={restaurantList}
             selectedIndex={selectedIndex}
