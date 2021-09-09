@@ -33,7 +33,7 @@ export default function LeafletMap(props) {
   const zoom = 10;
   const {restaurantList} = props;
   const {driverList} = props;
-  const {orderList} = props;
+  const {orderList } = props;
   const {centerCity} = props;
   const iconTruck = new L.Icon({
     iconUrl: LocalShippingIcon,
@@ -54,7 +54,11 @@ export default function LeafletMap(props) {
           (v) =>
             v.Latitude &&
             v.Longitude && (
-              <Marker icon={iconTruck} position={[v.Latitude, v.Longitude]} />
+              <Marker
+                icon={iconTruck}
+                // icon={iconOrder}
+                position={[v.Latitude, v.Longitude]}
+              />
             )
         );  
     }
@@ -76,11 +80,11 @@ export default function LeafletMap(props) {
 
     };
         const renderOrder = () => {
-          if (restaurantList.length > 0) {
+          if (orderList.length > 0) {
             return orderList.map(
               (o) =>
-                o.Latitude &&
-                o.Longitude && (
+                o.order_customer_Latitude &&
+                o.order_customer_Longitude && (
                   <Marker
                     icon={iconOrder}
                     position={[

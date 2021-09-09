@@ -66,6 +66,7 @@ export default function TrackingTab(props) {
           </ListItem>
         );
       }
+  
   const renderVehicleList = ()=>{
     return (
       <List style={{ paddingBottom: `0` }} component="nav">
@@ -160,6 +161,10 @@ export default function TrackingTab(props) {
                      "Latitude:" + r.order_customer_Latitude
                    )}
                    {renderVehicle(
+                     MenuBookIcon,
+                     "Longtitude:" + r.order_customer_Longitude
+                   )}
+                   {renderVehicle(
                      EmojiTransportationIcon,
                      "delivery date:" + r.order_delivered_customer_date
                    )}
@@ -174,14 +179,12 @@ export default function TrackingTab(props) {
                    )}
                    {renderVehicle(
                      EmojiTransportationIcon,
-                     "restaurantId:" +
-                       r.order_restaurant_carrier_restaurantId
+                     "restaurantId:" + r.order_restaurant_carrier_restaurantId
                    )}
                    {renderVehicle(
                      EmojiTransportationIcon,
                      "order status:" + r.order_status
                    )}
-                   order_status
                  </List>
                </Collapse>
              </div>

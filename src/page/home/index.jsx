@@ -67,7 +67,7 @@ export default function Home() {
     setSelectedCity(cityList[0]);
   }, [cityList]);
     useEffect(() => {
-      console.log(orderList);
+      // console.log(orderList);
     }, [orderList]);
 
   useEffect(() => {
@@ -118,6 +118,7 @@ const handleChangeCity = (e)=>{
   }
    const handleChangeTrackingTab = (event, newValue) => {
      setCurrentTrackingTab(newValue);
+     console.log(newValue);
    };
   const handleClickTrackingTabItem = (event, index) => {
         if (index === selectedIndex) {
