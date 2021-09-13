@@ -156,17 +156,11 @@ export default function TrackingTab(props) {
                      ThumbUpIcon,
                      "order approved at:" + r.order_approved_at
                    )}
-                   {renderVehicle(
-                     MenuBookIcon,
-                     "Latitude:" + r.order_customer_Latitude
-                   )}
-                   {renderVehicle(
-                     MenuBookIcon,
-                     "Longtitude:" + r.order_customer_Longitude
-                   )}
+                   {renderVehicle(MenuBookIcon, "Latitude:" + r.Latitude)}
+                   {renderVehicle(MenuBookIcon, "Longtitude:" + r.Longitude)}
                    {renderVehicle(
                      EmojiTransportationIcon,
-                     "delivery date:" + r.order_delivered_customer_date
+                     "delivery date:" + r.order_request_time
                    )}
                    {renderVehicle(
                      EmojiTransportationIcon,

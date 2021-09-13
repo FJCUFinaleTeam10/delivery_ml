@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 import LocalShippingIcon from "../asset/images/truck.svg";
 import storeIcon from "../asset/images/store.png";
 import CardTravelIcon from "../asset/images/sent.svg";
+import inventoryIcon from "../asset/images/inventory.svg";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
@@ -44,7 +45,7 @@ export default function LeafletMap(props) {
     iconSize: new L.Point(60, 75),
   });
   const iconOrder = new L.Icon({
-    iconUrl: CardTravelIcon,
+    iconUrl: inventoryIcon,
     iconSize: new L.Point(60, 75),
   });
 
@@ -83,13 +84,13 @@ export default function LeafletMap(props) {
           if (orderList.length > 0) {
             return orderList.map(
               (o) =>
-                o.order_customer_Latitude &&
-                o.order_customer_Longitude && (
+                o.Latitude &&
+                o.Longitude && (
                   <Marker
                     icon={iconOrder}
                     position={[
-                      o.order_customer_Latitude,
-                      o.order_customer_Longitude,
+                      o.Latitude,
+                      o.Longitude,
                     ]}
                   />
                 )
