@@ -1,6 +1,16 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
+import React, { withStyles, useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
+import SentimentDissatisfiedIcon from "@material-ui/icons/SentimentDissatisfied";
+import SentimentSatisfiedIcon from "@material-ui/icons/SentimentSatisfied";
+import SentimentSatisfiedAltIcon from "@material-ui/icons/SentimentSatisfiedAltOutlined";
+import SentimentVerySatisfiedIcon from "@material-ui/icons/SentimentVerySatisfied";
+import PropTypes from "prop-types";
+import restaurantApi from "../../services/restaurantApi";
+import RestaurantCard from "../../component/card/RestaurantCard";
+import geolocationApi from "../../services/geolocationApi";
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -9,7 +19,6 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Collapse from '@material-ui/core/Collapse';
@@ -17,46 +26,251 @@ import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import orderData from './orderData.json';
 
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '30%',
-        maxWidth: '1000ch',
-        maxHigh: '50ch',
-        alignItems: "center",
+        position: "relative",
     },
-    inline: {
-        display: 'inline',
+
+    paper: {
+        maxWidth: 800,
+        margin: `${theme.spacing(1)}px auto`,
+        padding: theme.spacing(2),
     },
-    information: {
-        background: '#eeeeee',
+    iconFilled: {
+        color: "#ff6d75",
     },
-    Information_root: {
-        maxWidth: 345,
-    },
-    media: {
-        height: 0,
-        paddingTop: '56.25%', // 16:9
-    },
-    expand: {
-        transform: 'rotate(0deg)',
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
+    iconHover: {
+        color: "#ff3d47",
     },
 }));
 
+function sleep(delay = 0) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, delay);
+    });
+}
 
-export default function AlignItemsList() {
+const customIcons = {
+    1: {
+        icon: <SentimentVeryDissatisfiedIcon />,
+        label: "Very Dissatisfied",
+    },
+    2: {
+        icon: <SentimentDissatisfiedIcon />,
+        label: "Dissatisfied",
+    },
+    3: {
+        icon: <SentimentSatisfiedIcon />,
+        label: "Neutral",
+    },
+    4: {
+        icon: <SentimentSatisfiedAltIcon />,
+        label: "Satisfied",
+    },
+    5: {
+        icon: <SentimentVerySatisfiedIcon />,
+        label: "Very Satisfied",
+    },
+};
+
+function IconContainer(props) {
+    const { value, ...other } = props;
+    return <span {...other}>{customIcons[value].icon}</span>;
+}
+
+IconContainer.propTypes = {
+    value: PropTypes.number.isRequired,
+};
+
+export default function RestaurantList() {
     const classes = useStyles();
+    const [value] = React.useState(4);
+    const [restaurantList, setRestaurantList] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [limit, setLimit] = useState(5);
+    const [options, setOptions] = React.useState([]);
+
+    const [countryList, setCountryList] = useState([]);
+    const [cityList, setCityList] = useState([]);
+    const [page, setPage] = useState(1);
+    const [currentCountry, setCurrentCountry] = useState();
+    const [currentCity, setCurrentCity] = useState();
+    const [countryTabOpen, setCountryTabOpen] = useState(false);
+    const [cityTabOpen, setCityTabOpen] = useState(false);
+    const countryLoading = countryTabOpen && countryList.length === 0;
+    const cityLoading = cityTabOpen && cityList.length === 0;
+    useEffect(() => {
+        let active = true;
+
+        if (!countryLoading) {
+            return undefined;
+        }
+        (async () => {
+            const response = await fetch(
+                "https://country.register.gov.uk/records.json?page-size=5000"
+            );
+            await sleep(1e3); // For demo purposes.
+            const countries = await response.json();
+
+            if (active) {
+                setOptions(Object.keys(countries).map((key) => countries[key].item[0]));
+            }
+        })();
+        return () => {
+            active = false;
+        };
+    }, [countryLoading]);
+    useEffect(() => {
+        let active = true;
+
+        if (!cityLoading) {
+            return undefined;
+        }
+        (async () => {
+            const response = await fetch(
+                "https://country.register.gov.uk/records.json?page-size=5000"
+            );
+            await sleep(1e3); // For demo purposes.
+            const countries = await response.json();
+
+            if (active) {
+                setOptions(
+                    Object.keys(countries).map((key) => countries[key].item[0])
+                );
+            }
+        })();
+        return () => {
+            active = false;
+        };
+    }, [cityLoading]);
+
+    useEffect(() => {
+        fetch_country_list();
+        fetch_restaurant_list();
+    }, []);
+
+
+    useEffect(() => {
+        console.log(countryList);
+        fetch_city_list_baseoneCountry();
+    }, [countryList]);
+
+    useEffect(() => {
+        console.log(cityList);
+    }, [cityList]);
+
+    useEffect(() => {
+        console.log(currentCountry);
+        fetch_city_list_baseoneCountry();
+    }, [currentCountry]);
+    useEffect(() => {
+        console.log(currentCity);
+        fetch_restaurant_list();
+    }, [currentCity]);
+    useEffect(() => {
+        console.log(restaurantList);
+    }, [restaurantList]);
+
+    const renderRestaurantsList = () => {
+        return (
+            <Grid container spacing={3}>
+                {restaurantList.map((restaurant) => (
+                    <Grid item xs={12}>
+                        <RestaurantCard info={restaurant} />
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    };
+    const handleChangePaginition = (event, page) => {
+
+    };
+    const handlePageChanges = (_, page) => {
+        console.log("done");
+        console.log(page);
+        setCurrentPage(page);
+        fetch_restaurant_list();
+    };
+
+    const fetch_restaurant_list = async () => {
+        try {
+            const params = {
+                skip: currentPage,
+                limit: limit,
+                city: currentCity?.City,
+            };
+            const response = await restaurantApi.getRestaurantList(params);
+            setRestaurantList(response);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const fetch_city_list_baseoneCountry = async () => {
+        try {
+            const params = {
+                countrycode: currentCountry.country_code,
+            };
+            const response = await geolocationApi.getCityBaseonCountrycode(params);
+            setCityList(response);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const fetch_country_list = async () => {
+        try {
+            const response = await geolocationApi.getAllCountryCodes();
+            setCountryList(response);
+        } catch (e) {
+            console.log(e);
+        }
+    };
+    const get_Country_OptionSelected = (country, value) => {
+        setCurrentCountry(value);
+    }
+    const get_city_OptionSelected = (city, value) => {
+        setCurrentCity(value);
+    }
+    const handleChange = (event, value) => {
+        setPage(value);
+    };
+
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+    const RestaurantName = orderData.map((orderData) => {
+        return (
+            <Typography>
+                {orderData.order_restaurant_carrier_restaurantId} <br />
+            </Typography>
+        )
+    }
+    )
+
+    const RestaurantDate = orderData.map((orderData) => {
+        return (
+            <Typography>
+                {orderData.order_approved_at}<br />
+            </Typography>
+        )
+    }
+    )
+
+    const OrderDataID = orderData.map((orderData) => {
+        return (
+            <Typography>
+                姓名: {orderData.id} <br />
+                住址: ({orderData.order_customer_Latitude}, {orderData.order_customer_Longitude}) <br />
+                電話: {orderData.order_coustomer_phone}
+            </Typography>
+        )
+    }
+    )
 
     return (
         <div>
@@ -74,24 +288,7 @@ export default function AlignItemsList() {
                                     className={classes.inline}
                                     color="textPrimary"
                                 >
-                                    姓名: <br />
-                                </Typography>
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    className={classes.inline}
-                                    color="textPrimary"
-                                >
-                                    住址: <br />
-                                </Typography>
-
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    className={classes.inline}
-                                    color="textPrimary"
-                                >
-                                    電話:
+                                    {OrderDataID}
                                 </Typography>
                             </React.Fragment>
                         }
@@ -99,6 +296,11 @@ export default function AlignItemsList() {
                     />
                 </ListItem>
             </List>
+            <Card>
+                <Typography>
+                    訂單資訊
+                </Typography>
+            </Card>
             <Card className={classes.Information_root}>
                 <CardHeader
                     avatar={
@@ -111,14 +313,10 @@ export default function AlignItemsList() {
                             <MoreVertIcon />
                         </IconButton>
                     }
-                    title="Shrimp and Chorizo Paella"
-                    subheader="September 14, 2016"
+                    title={RestaurantName}
+                    subheader={RestaurantDate}
                 />
-                <CardMedia
-                    className={classes.media}
-                    image="/static/images/cards/paella.jpg"
-                    title="Paella dish"
-                />
+
                 <CardContent>
                     <Button variant="outlined" color="primary">
                         餐點配送狀況

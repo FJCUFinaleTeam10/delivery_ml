@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "^7.14.8",
-    "@material-ui/core": "^4.12.1",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
     "@testing-library/jest-dom": "^5.14.1",
@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "dotenv": "^10.0.0",
     "leaflet": "^1.7.1",
+    "material-table": "^1.69.3",
     "notistack": "^1.0.9",
     "query-string": "^7.0.1",
     "querystring-browser": "^1.0.4",

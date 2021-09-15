@@ -10,6 +10,10 @@ import _ from "lodash";
 import L from "leaflet";
 import Restaurants from './page/restaurant';
 import RestaurantList from './page/restaurant/RestaurantList';
+import OrderList from './page/order/orderList';
+import OrderInformation from './page/order/orderInformation';
+import SystemTable from './page/order/SystemTable';
+
 export default function App(props) {
   return (
     <Router>
@@ -32,6 +36,15 @@ export default function App(props) {
           </Route>
           <Route path="/restaurant/:id" exact>
             <Restaurants/>
+          </Route>
+          <Route path="/orderList" exact>
+            <OrderList />
+          </Route>
+          <Route path="/orderInformation" exact>
+            <OrderInformation />
+          </Route>
+          <Route path="/SystemTable" exact>
+            <SystemTable />
           </Route>
           <Route path="/" exact>
             <Home />
