@@ -67,7 +67,7 @@ export default function Home() {
     setSelectedCity(cityList[0]);
   }, [cityList]);
     useEffect(() => {
-      // console.log(orderList);
+      console.log(orderList);
     }, [orderList]);
 
   useEffect(() => {
