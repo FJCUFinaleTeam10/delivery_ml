@@ -1,21 +1,18 @@
 import React, { useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import osm from './osm-provider';
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
 import { makeStyles } from "@material-ui/core/styles";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import LocalShippingIcon from "../asset/images/truck.svg";
 import storeIcon from "../asset/images/store.png";
-import CardTravelIcon from "../asset/images/sent.svg";
-import inventoryIcon from "../asset/images/inventory.svg";
+import inventoryIcon from "../asset/images/delivery.png";
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
   },
   container: {
     width: `20%`,
-    width: `1150px`,
-    height: `auto`,
+    height: `5%`,
     position: `absolute`,
     bottom: `0`,
     zIndex: `1000`,
@@ -31,7 +28,7 @@ function ChangeView({ center, zoom }) {
 
 export default function LeafletMap(props) {
   const classes = useStyles();
-  const zoom = 10;
+  const zoom = 15;
   const {restaurantList} = props;
   const {driverList} = props;
   const {orderList } = props;
@@ -57,7 +54,6 @@ export default function LeafletMap(props) {
             v.Longitude && (
               <Marker
                 icon={iconTruck}
-                // icon={iconOrder}
                 position={[v.Latitude, v.Longitude]}
               />
             )
@@ -103,10 +99,10 @@ export default function LeafletMap(props) {
       center={[centerCity.Latitude, centerCity.Longitude]}
       zoom={zoom}
     >
-      <ChangeView
-        center={[centerCity.Latitude, centerCity.Longitude]}
-        zoom={zoom}
-      />
+      {/*<ChangeView*/}
+      {/*  center={[centerCity.Latitude, centerCity.Longitude]}*/}
+      {/*  zoom={zoom}*/}
+      {/*/>*/}
       <TileLayer
         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         zoomControl="false"

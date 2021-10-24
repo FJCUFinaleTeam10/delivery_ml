@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import { makeStyles } from "@material-ui/core/styles";
@@ -16,7 +15,6 @@ import Typography from "@material-ui/core/Typography";
 import DriveEtaIcon from "@material-ui/icons/DriveEta";
 import Collapse from "@material-ui/core/Collapse";
 import SpeedIcon from "@material-ui/icons/Speed";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import EmojiTransportationIcon from "@material-ui/icons/EmojiTransportation";
 import RestaurantMenuIcon from "@material-ui/icons/RestaurantMenu";
 import StorageIcon from "@material-ui/icons/Storage";
@@ -154,7 +152,7 @@ export default function TrackingTab(props) {
                  <List component="div" disablePadding>
                    {renderVehicle(
                      ThumbUpIcon,
-                     "order approved at:" + r.order_approved_at
+                     "cart approved at:" + r.order_approved_at
                    )}
                    {renderVehicle(MenuBookIcon, "Latitude:" + r.Latitude)}
                    {renderVehicle(MenuBookIcon, "Longtitude:" + r.Longitude)}
@@ -177,7 +175,7 @@ export default function TrackingTab(props) {
                    )}
                    {renderVehicle(
                      EmojiTransportationIcon,
-                     "order status:" + r.order_status
+                     "cart status:" + r.order_status
                    )}
                  </List>
                </Collapse>
@@ -209,9 +207,9 @@ export default function TrackingTab(props) {
                 textColor="primary"
                 centered
               >
-                <Tab label="Driver" />
-                <Tab label="Restaurant" />
-                <Tab label="Order" />
+                <Tab label={`Driver (${driverList.length})`} />
+                <Tab label={`Restaurant (${restaurantList.length})`} />
+                <Tab label={`Order (${orderList.length})`}/>
               </Tabs>
               {currentTrackingTab===0?(
                 renderVehicleList()

@@ -10,24 +10,19 @@ import CircularLoading from '../../component/CircularLoading';
 import geolocationApi from "../../services/geolocationApi";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import LocalShippingIcon from "../../asset/images/truck.svg";
-import storeIcon from "../../asset/images/store.png";
-import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../../component/TrackingTab";
 import TrackingTab from "../../component/TrackingTab";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 import orderApi from "../../services/orderApi.js";
+require('dotenv').config();
+
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,
   },
   container: {
-    width: `20%`,
-    width: `1150px`,
-    height: `auto`,
+    width: `100%`,
+    height: `9%`,
     position: `absolute`,
     bottom: `0`,
     zIndex: `1000`,
@@ -35,11 +30,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-  const center = {
-    Latitude: 51.505,
-    Longitude: -0.09,
-  };
-  const zoom = 13;
 export default function Home() {
 
   const [restaurantList,setRestaurantList] = useState([]);
@@ -51,9 +41,9 @@ export default function Home() {
   const [selectedCity,setSelectedCity] = useState({
     Latitude: 23.553118,
     Longitude: 121.0211024,
+    City:"Arga"
   });
-  const [map, setMap] = useState(null);
-  const [zoom,setZoom] = useState(10);
+
   const [currentTrackingTab,setCurrentTrackingTab] = useState(0);
   useEffect(() => {
       async function fetchCity(){
@@ -66,11 +56,43 @@ export default function Home() {
   useEffect(() => {
     setSelectedCity(cityList[0]);
   }, [cityList]);
+
     useEffect(() => {
       console.log(orderList);
     }, [orderList]);
+  useEffect(() => {
+    console.log(driverList);
+  }, [driverList]);
 
   useEffect(() => {
+    console.log(selectedCity);
+    const intervalId = setInterval(() => {  //assign interval to a variable to clear it.
+
+      async function getDriverBaseOnCity() {
+        try {
+          const params = {
+            city: selectedCity.City,
+          };
+          const response = await driverApi.getDriverBaseOnCity(params);
+          setDriverList(response);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      async function getOrderBaseOnCity() {
+        try {
+          const params = {
+            city: selectedCity.City,
+          };
+          const response = await orderApi.getOrderBaseOnCity(params);
+          setOrderList(response);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      getOrderBaseOnCity();
+      getDriverBaseOnCity();
+    }, 1000)
     async function getRestaurantBaseOnCity() {
       try {
         const params = {
@@ -82,31 +104,9 @@ export default function Home() {
         console.log(e);
       }
     }
-    async function getDriverBaseOnCity() {
-      try {
-        const params = {
-          city: selectedCity.City,
-        };
-        const response = await driverApi.getDriverBaseOnCity(params);
-        setDriverList(response);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    async function getOrderBaseOnCity() {
-      try {
-        const params = {
-          city: selectedCity.City,
-        };
-        const response = await orderApi.getOrderBaseOnCity(params);
-        setOrderList(response);
-      } catch (e) {
-        console.log(e);
-      }
-    }
     getRestaurantBaseOnCity();
-    getDriverBaseOnCity();
-    getOrderBaseOnCity();
+    return () => clearInterval(intervalId); //This is important
+
   }, [selectedCity]);
 
 
@@ -128,11 +128,9 @@ const handleChangeCity = (e)=>{
         }
       };
 
-
-
     const renderSelectCity = () => {
       return (
-        <div>
+        <div >
           <TextField
             id="standard-select-currency"
             select
@@ -168,7 +166,7 @@ const handleChangeCity = (e)=>{
   return (
     <div style={{ position: "relative" }}>
       {cityList.length > 0 && selectedCity !== undefined ? (
-        renderSelectCity() 
+        renderSelectCity()
       ) : (
         <CircularLoading />
       )}

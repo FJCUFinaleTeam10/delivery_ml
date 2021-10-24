@@ -85,10 +85,8 @@ const columns = [
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-  },
-  root: {
     margin: theme.spacing(1),
-    width: "25ch",
+
   },
   map: {
     height: `25vh`,
@@ -131,7 +129,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 159,
     backgroundColor: theme.palette.background.paper,
     width: "100%",
-    maxWidth: 360,
     position: "relative",
     overflow: "auto",
     maxHeight: 300,
@@ -289,8 +286,6 @@ export default function StickyHeadTable() {
           email: email,
           description: description,
           telephone: telephone,
-          longitude: currentPosition[1],
-          latitude: currentPosition[0],
         };
         const respone = await orderApi.createOrder(params);
         return respone;

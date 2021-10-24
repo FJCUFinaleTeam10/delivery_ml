@@ -37,7 +37,6 @@ export default function App(props) {
       dragend() {
         const marker = markerRef.current;
         if (marker != null) {
-        //   console.log(marker.getLatLng());
           const { lat, lng } = marker.getLatLng();
           setX(lng);
           setY(lat);

@@ -105,7 +105,7 @@ function SystemTable() {
     
             </NativeSelect>
           </FormControl>,
-          tooltip:"Filter order state",
+          tooltip:"Filter cart state",
           isFreeAction: true
           }
         ]}

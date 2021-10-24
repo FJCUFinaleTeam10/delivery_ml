@@ -4,11 +4,11 @@ import clsx from "clsx";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
-import StarBorder from "@material-ui/icons/StarBorder";
 import StorageIcon from "@material-ui/icons/Storage";
 import CommuteIcon from "@material-ui/icons/Commute";
 import RestaurantIcon from "@material-ui/icons/Restaurant";
-import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   AppBar,
   IconButton,
@@ -33,9 +33,7 @@ import {
   ChevronRight,
   ChevronLeft,
   CloseOutlined,
-  QuestionAnswer,
   LibraryBooks,
-  DoneAll,
   Dashboard,
   AccountBox,
 } from "@material-ui/icons";
@@ -243,7 +241,7 @@ function AppScaffold(props) {
                 <ListItemIcon>
                   <Dashboard />
                 </ListItemIcon>
-                <ListItemText primary="Statistics" />
+                <ListItemText inset primary="Statistics" />
               </ListItem>
             </Tooltip>
             <Tooltip title="basic" dir="right" arrow placement="right">
@@ -255,18 +253,20 @@ function AppScaffold(props) {
                 <ListItemIcon>
                   <StorageIcon />
                 </ListItemIcon>
-                <ListItemText primary="Basic Manger" />
+                <ListItemText primary="Basic Manager" />
                 {openBasic ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
             </Tooltip>
             <Collapse in={openBasic} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <CommuteIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Car management" />
-                </ListItem>
+                <SimpleLink to ='/driverList'>
+                  <ListItem button className={classes.nested}>
+                    <ListItemIcon>
+                      <CommuteIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Car management" />
+                  </ListItem>
+                </SimpleLink>
                 <SimpleLink to="/restaurantlist">
                   <ListItem button className={classes.nested}>
                     <ListItemIcon>
@@ -275,22 +275,25 @@ function AppScaffold(props) {
                     <ListItemText primary="Restaurant Management" />
                   </ListItem>
                 </SimpleLink>
-                <ListItem button className={classes.nested}>
-                  <ListItemIcon>
-                    <ShoppingCartIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Order Management" />
-                </ListItem>
+                <SimpleLink to="/orderlist">
+                  <ListItem button className={classes.nested}>
+                    <ListItemIcon>
+                      <ShoppingBasketIcon/>
+                    </ListItemIcon>
+                    <ListItemText primary="Order Management" />
+                  </ListItem>
+                </SimpleLink>
+
               </List>
             </Collapse>
 
-            <Tooltip title="Profile" arrow placement="right">
-              <SimpleLink to="/me">
+            <Tooltip title="Setting" arrow placement="right">
+              <SimpleLink to="/setting">
                 <ListItem className={classes.listItem} button>
                   <ListItemIcon>
-                    <AccountBox />
+                    <SettingsIcon/>
                   </ListItemIcon>
-                  <ListItemText primary="Profile" />
+                  <ListItemText primary="Setting" />
                 </ListItem>
               </SimpleLink>
             </Tooltip>

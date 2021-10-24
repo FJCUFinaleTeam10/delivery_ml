@@ -1,11 +1,11 @@
 import axiosClient from "./axiosClient";
 const orderApi = {
   getAll: (params) => {
-    const url = "/order/";
+    const url = "/cart/";
     return axiosClient.get(url, { params });
   },
   createOrder: (params) => {
-    const url = "/order/createOrder/";
+    const url = "/cart/createOrder/";
     return axiosClient.post(url, params);
   },
   baseonrestaurant: (params) => {
