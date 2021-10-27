@@ -76,6 +76,17 @@ export default function Setting() {
         setOpenSnackBar(!openSnackBar);
     }
     const handleClick = ()=>{
+        async function sendingSetting(){
+            try {
+                const params = JSON.parse(JSON.stringify(setting));
+                console.log(params);
+                const response = await settingApi.updateSetting(params);
+                console.log(response);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        sendingSetting();
         setOpenSnackBar(!openSnackBar);
     }
     return (
