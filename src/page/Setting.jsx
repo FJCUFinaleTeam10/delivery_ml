@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {makeStyles, Paper, TableCell, Typography} from "@material-ui/core";
+import {makeStyles, Paper, Snackbar, TableCell, Typography} from "@material-ui/core";
 
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -21,6 +21,7 @@ import CircularLoading from "../component/CircularLoading";
 import geolocationApi from "../services/geolocationApi";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
+import {Alert} from "@material-ui/lab";
 const useStyles = makeStyles((theme) => ({
 }));
 
@@ -31,7 +32,7 @@ export default function Setting() {
 
     const [currentCity, setCurrentCity] = React.useState(null);
     const [cityList, setCityList] = React.useState([]);
-
+    const [openSnackBar,setOpenSnackBar] = useState(false);
     useEffect(()=>{
         async function fetchCity(){
             const response = await geolocationApi.getAllCity();
@@ -46,16 +47,20 @@ export default function Setting() {
     useEffect(()=>{
         console.log(cityList);
         setCurrentCity(0);
+    },[cityList]);
+
+    useEffect(()=>{
         async function fetch_Setting(){
             try {
-                const response = await settingApi.getAllSetting();
+                const response = await settingApi.getSettingBaseOneCity({city:cityList[currentCity]?.City});
                 setSetting(response[0]);
             } catch (error) {
                 console.log(error);
             }
         };
         fetch_Setting();
-    },[cityList]);
+    },[currentCity]);
+
     const handleChangeCity =(event)=>{
         setCurrentCity(event.target.value);
         console.log(event.target);
@@ -67,12 +72,20 @@ export default function Setting() {
     const changebuffer =(e,props)=>{
         setSetting({ ...setting, [props]: e.target.value });
     }
-
+    const handleClose= ()=>{
+        setOpenSnackBar(!openSnackBar);
+    }
+    const handleClick = ()=>{
+        setOpenSnackBar(!openSnackBar);
+    }
     return (
         <div>
             <FormControl sx={{ m: 1, minWidth: 120 }}>
-                <InputLabel id="demo-simple-select-helper-label">City</InputLabel>
+                <InputLabel
+                    focused
+                    id="demo-simple-select-helper-label" >City</InputLabel>
                 <Select
+                    focused
                     labelId="demo-simple-select-helper-label"
                     id={currentCity}
                     value={currentCity}
@@ -91,6 +104,7 @@ export default function Setting() {
                         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                                 <Grid item xs={2} sm={4} md={4} key={1}>
                                     <TextField
+                                        focused
                                         label="capacity"
                                         id="outlined-start-adornment"
                                         sx={{ m: 1, width: '25ch' }}
@@ -103,6 +117,7 @@ export default function Setting() {
                                 </Grid>
                                 <Grid item xs={2} sm={4} md={4} key={2}>
                                     <TextField
+                                        focused
                                     label="deadline Time"
                                     id="outlined-start-adornment"
                                     sx={{ m: 1, width: '25ch' }}
@@ -115,6 +130,7 @@ export default function Setting() {
                                 </Grid>
                                 <Grid item xs={2} sm={4} md={4} key={3}>
                                     <TextField
+                                        focused
                                         label="delay Time"
                                         id="outlined-start-adornment"
                                         sx={{ m: 1, width: '25ch' }}
@@ -127,6 +143,7 @@ export default function Setting() {
                                 </Grid>
                                 <Grid item xs={2} sm={4} md={4} key={4}>
                                     <TextField
+                                        focused
                                         label="maxLength Postponement"
                                         id="outlined-start-adornment"
                                         sx={{ m: 1, width: '25ch' }}
@@ -139,6 +156,7 @@ export default function Setting() {
                                 </Grid>
                                 <Grid item xs={2} sm={4} md={4} key={5}>
                                     <TextField
+                                        focused
                                         label="Restaurant PrepareTime"
                                         id="outlined-start-adornment"
                                         sx={{ m: 1, width: '25ch' }}
@@ -151,6 +169,7 @@ export default function Setting() {
                                 </Grid>
                             <Grid item xs={2} sm={4} md={4} key={6}>
                                 <TextField
+                                    focused
                                     label="t_Pmax"
                                     id="outlined-start-adornment"
                                     sx={{ m: 1, width: '25ch' }}
@@ -163,6 +182,7 @@ export default function Setting() {
                             </Grid>
                             <Grid item xs={2} sm={4} md={4} key={7}>
                                 <TextField
+                                    focused
                                     label="t_ba"
                                     id="outlined-start-adornment"
                                     sx={{ m: 1, width: '25ch' }}
@@ -175,6 +195,7 @@ export default function Setting() {
                             </Grid>
                             <Grid item xs={2} sm={4} md={4} key={8}>
                                 <TextField
+                                    focused
                                     label="velocity"
                                     id="outlined-start-adornment"
                                     sx={{ m: 1, width: '25ch' }}
@@ -193,7 +214,12 @@ export default function Setting() {
                     <CircularLoading/>
                 )}
             </Paper>
-            <Button variant="contained">Update</Button>
+            <Button variant="contained" color="success" onClick={handleClick}>Update</Button>
+            <Snackbar open={openSnackBar} autoHideDuration={6000} onClose={handleClose}  anchorOrigin={{ vertical: 'top', horizontal: 'right'}}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    Update Success!
+                </Alert>
+            </Snackbar>
         </div>
 
     );
