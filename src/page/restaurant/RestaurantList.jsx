@@ -176,10 +176,7 @@ export default function RestaurantList() {
             </Grid>
         );
     };
-    const handleChangePaginition = (event, page) => {
-   
-    };
-      const handlePageChanges = (_, page) => {
+    const handlePageChanges = (_, page) => {
           console.log("done");
            console.log(page);
            setCurrentPage(page);

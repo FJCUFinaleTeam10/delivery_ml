@@ -174,28 +174,6 @@ export default function RestaurantList() {
     useEffect(() => {
         console.log(restaurantList);
     }, [restaurantList]);
-
-    const renderRestaurantsList = () => {
-        return (
-            <Grid container spacing={3}>
-                {restaurantList.map((restaurant) => (
-                    <Grid item xs={12}>
-                        <RestaurantCard info={restaurant} />
-                    </Grid>
-                ))}
-            </Grid>
-        );
-    };
-    const handleChangePaginition = (event, page) => {
-
-    };
-    const handlePageChanges = (_, page) => {
-        console.log("done");
-        console.log(page);
-        setCurrentPage(page);
-        fetch_restaurant_list();
-    };
-
     const fetch_restaurant_list = async () => {
         try {
             const params = {

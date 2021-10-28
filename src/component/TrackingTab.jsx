@@ -23,6 +23,7 @@ import Tab from "@material-ui/core/Tab";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import CardTravelIcon from "@material-ui/icons/CardTravel";
+import Divider from "@material-ui/core/Divider";
 const useStyles = makeStyles((theme) => ({
   container: {
     width: `30%`,
@@ -83,6 +84,7 @@ export default function TrackingTab(props) {
                 />
                 {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
+                <Divider />
               <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {renderVehicle(SpeedIcon, "Velocity:" + v.Velocity + " km/h")}
@@ -116,6 +118,7 @@ export default function TrackingTab(props) {
                  <ListItemText primary={r.Restaurant_Name} />
                  {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
                </ListItem>
+                 <Divider />
                <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
                  <List component="div" disablePadding>
                    {renderVehicle(ThumbUpIcon, "Votes:" + r.Votes)}
@@ -148,6 +151,7 @@ export default function TrackingTab(props) {
                  <ListItemText primary={r.id} />
                  {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
                </ListItem>
+                 <Divider />
                <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
                  <List component="div" disablePadding>
                    {renderVehicle(

@@ -416,7 +416,9 @@ export default function StickyHeadTable() {
                 <ListItemText primary={`${item.info.item}`} />
               </ListItemAvatar>
               <ListItemText primary={`${item.amount}`} />
+              <Divider />
             </ListItem>
+
           ))}
         </List>
       );
@@ -465,10 +467,6 @@ export default function StickyHeadTable() {
               <Typography variant="h6">
                 {menus[currentSections]?.section}
               </Typography>
-              <Typography variant="subtitle2">
-                Te ferri iisque aliquando pro, posse nonumes efficiantur in cum.
-                Sensibus reprimique eu pro. Fuisset mentitum deleniti sit ea.
-              </Typography>
               <Divider light />
             </Box>
             <TableContainer className={classes.container}>
@@ -496,10 +494,11 @@ export default function StickyHeadTable() {
                         key={menu.id}
                       >
                         <TableCell key="name">
-                          {menu.item}
+
                           <Avatar variant="square" className={classes.square}>
-                            <img src={menu.img} alt="Italian Trulli" />
+                            <img src={menu.img} alt="Italian Trulli"  width="5000" height="500"/>
                           </Avatar>
+                          {menu.item}
                         </TableCell>
                         <TableCell key="price">{menu.price}</TableCell>
                         <TableCell key="des">{menu.description}</TableCell>

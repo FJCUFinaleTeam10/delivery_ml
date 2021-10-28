@@ -179,10 +179,10 @@ function AppScaffold(props) {
             edge="start"
             color="inherit"
             aria-label="Menu"
-            onClick={openBasic ? handleDrawerClose : handleDrawerOpen}
+            onClick={open ? handleDrawerClose : handleDrawerOpen}
             className={clsx(classes.menuButton)}
           >
-            {openBasic ? <CloseOutlined /> : <MenuOutlined />}
+            {open ? <CloseOutlined /> : <MenuOutlined />}
             <Typography variant="subtitle1" color="white">
               {open ? "Collapse" : "Expand"}
             </Typography>
@@ -237,12 +237,15 @@ function AppScaffold(props) {
           <Divider />
           <List>
             <Tooltip title="Statistics" dir="right" arrow placement="right">
-              <ListItem className={classes.listItem} button>
-                <ListItemIcon>
-                  <Dashboard />
-                </ListItemIcon>
-                <ListItemText inset primary="Statistics" />
-              </ListItem>
+              <SimpleLink to="./statistic">
+                <ListItem className={classes.listItem} button>
+                  <ListItemIcon>
+                    <Dashboard />
+                  </ListItemIcon>
+                  <ListItemText inset primary="Statistics" />
+                </ListItem>
+              </SimpleLink>
+
             </Tooltip>
             <Tooltip title="basic" dir="right" arrow placement="right">
               <ListItem

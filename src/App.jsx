@@ -10,8 +10,8 @@ import Restaurants from './page/restaurant';
 import RestaurantList from './page/restaurant/RestaurantList';
 import Driver from './page/driver/';
 import Setting from './page/Setting';
-import SystemTable from './page/cart/SystemTable';
 import  Order from './page/order/';
+import  Statistic from  './page/statistic';
 require('dotenv').config();
 
 export default function App(props) {
@@ -30,6 +30,9 @@ export default function App(props) {
           </Route>
           <Route path="/setting" exact>
             <Setting />
+          </Route>
+          <Route path="/statistic" exact>
+            <Statistic />
           </Route>
           <Route path="/driverList" exact>
             <Driver/>

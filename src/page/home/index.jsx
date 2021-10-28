@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { Container,
-        makeStyles,
-      } from "@material-ui/core";
+import { makeStyles} from "@material-ui/core";
 
 import LeafletMap from "../../component/leaflet.jsx";
 import  driverApi from '../../services/driverApi';

@@ -147,7 +147,7 @@ export default function Driver() {
         </Table>
         </TableContainer>
         <TablePagination component="div"
-        count={100}
+        count={driverList.length}
         page={currentPage}
         onPageChange={(e,pageNumber)=>handleChangePage(e,pageNumber)}
         rowsPerPage={pageSize}
