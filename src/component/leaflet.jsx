@@ -99,10 +99,10 @@ export default function LeafletMap(props) {
       center={[centerCity.Latitude, centerCity.Longitude]}
       zoom={zoom}
     >
-      {/*<ChangeView*/}
-      {/*  center={[centerCity.Latitude, centerCity.Longitude]}*/}
-      {/*  zoom={zoom}*/}
-      {/*/>*/}
+      <ChangeView
+        center={[centerCity.Latitude, centerCity.Longitude]}
+        zoom={zoom}
+      />
       <TileLayer
         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         zoomControl="false"
