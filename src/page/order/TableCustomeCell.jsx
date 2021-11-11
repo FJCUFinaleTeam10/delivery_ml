@@ -12,6 +12,8 @@ import storeIcon from "../../asset/images/store.png";
 import inventoryIcon from "../../asset/images/delivery.png";
 import CircularLoading from "../../component/CircularLoading";
 import TrackingTab from "../../component/TrackingTab";
+import orderApi from "../../services/orderApi";
+import driverApi from "../../services/driverApi";
 const useStyles = makeStyles((theme) => ({
     map: {
         height: `70vh`,
@@ -35,6 +37,7 @@ export default function TableCustomeCell(props) {
     const classes = useStyles();
     const [zoom,setZoom] =useState(10);
     const [distance,setDistance] = useState([]);
+    const [targetDriver,setTargetDriver] =useState(null);
     const iconTruck = new L.Icon({
         iconUrl: LocalShippingIcon,
         iconSize: new L.Point(60, 75),
@@ -60,9 +63,19 @@ export default function TableCustomeCell(props) {
     //     setDistance(tmp);
     //     console.log(tmp);
     // },[]);
-    // useEffect(()=>{
-    //     console.log(distance);
-    // },[distance])
+    useEffect(()=>{
+        if(openCollapse){
+            async function fetch_order_list(){
+                try {
+                    const response = await   driverApi.getDriverBaseOnID({driverId:order?.driver_id});
+                    setTargetDriver(response);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetch_order_list();
+        }
+    },[openCollapse]);
     useEffect(()=>{
         console.log(distance);
     },[distance])
@@ -87,12 +100,12 @@ export default function TableCustomeCell(props) {
                         <TableCell align="right">{order.order_request_time}</TableCell>
                         <TableCell align="right">{order.order_restaurant_carrier_date}</TableCell>
                         <TableCell align="right">{order.order_restaurant_carrier_restaurantId}</TableCell>
-                        <TableCell align="right">{order.customer_phone_number}</TableCell>
+                        {/*<TableCell align="right">{order.customer_phone_number}</TableCell>*/}
                         <TableCell align="right">{order.driver_id}</TableCell>
 
                         <TableCell align="right">{order.order_status}</TableCell>
-                        <TableCell align="right">{order.Qtable_position}</TableCell>
-                        <TableCell align="right">{order.Qtable_updated}</TableCell>
+                        {/*<TableCell align="right">{order.Qtable_position}</TableCell>*/}
+                        {/*<TableCell align="right">{order.Qtable_updated}</TableCell>*/}
                     </TableRow>
                     <TableRow>
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -109,23 +122,12 @@ export default function TableCustomeCell(props) {
                                         />
                                         <Marker
                                             icon={iconOrder}
-                                            position={[order.Latitude, order.Longitude]}
+                                            position={[order?.Latitude, order?.Longitude]}
                                         />
-                                        {/*{order.Route.map(*/}
-                                        {/*    (node) =>*/}
-                                        {/*        node.Latitude &&*/}
-                                        {/*        node.Longitude && (*/}
-                                        {/*            <Marker*/}
-                                        {/*                icon={node.nodeType==0?iconOrder:iconRestaurant}*/}
-                                        {/*                position={[node.Latitude, node.Longitude]}*/}
-                                        {/*            />*/}
-                                        {/*        ))*/}
-                                        {/*}*/}
-                                        {/*{distance.map((dis,index) => {*/}
-                                        {/*    return <Polyline key={index} positions={[*/}
-                                        {/*        [dis.from_lat, dis.from_long], [dis.to_lat, dis.to_long],*/}
-                                        {/*    ]} color={'red'} />*/}
-                                        {/*})}*/}
+                                        <Marker
+                                            icon={iconTruck}
+                                            position={[targetDriver?.Latitude, targetDriver?.Longitude]}
+                                        />
                                     </MapContainer>
 
                             </Collapse>

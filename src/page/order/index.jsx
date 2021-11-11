@@ -122,19 +122,19 @@ export default function Order() {
                                 <TableCell />
 
                                 <TableCell align="right"> Order ID</TableCell>
-                                <TableCell align="right">approved time</TableCell>
+                                <TableCell align="right">Assigned Time</TableCell>
                                 <TableCell align="right">Latitude</TableCell>
                                 <TableCell align="right">Longitude</TableCell>
-                                <TableCell align="right">order delivered customer date</TableCell>
-                                <TableCell align="right">order estimated delivery date</TableCell>
-                                <TableCell align="right">order request time</TableCell>
-                                <TableCell align="right">order restaurant carrier date</TableCell>
-                                <TableCell align="right">order restaurant carrier restaurantId</TableCell>
-                                <TableCell align="right">customer phone number</TableCell>
-                                <TableCell align="right">driver id</TableCell>
-                                <TableCell align="right">order status</TableCell>
-                                <TableCell align="right">Qtable position</TableCell>
-                                <TableCell align="right">Qtable updated</TableCell>
+                                <TableCell align="right">Real-Time Delivered Time</TableCell>
+                                <TableCell align="right">Estimated Delivered Time</TableCell>
+                                <TableCell align="right">Requested Time</TableCell>
+                                <TableCell align="right">Get Package Time</TableCell>
+                                <TableCell align="right">Restaurant Id</TableCell>
+                                {/*<TableCell align="right">customer phone number</TableCell>*/}
+                                <TableCell align="right">Driver Id</TableCell>
+                                <TableCell align="right">Order Status</TableCell>
+                                {/*<TableCell align="right">Qtable position</TableCell>*/}
+                                {/*<TableCell align="right">Qtable updated</TableCell>*/}
                             </TableRow>
                         </TableHead>
                         <TableBody>

@@ -24,6 +24,7 @@ import MenuBookIcon from "@material-ui/icons/MenuBook";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import CardTravelIcon from "@material-ui/icons/CardTravel";
 import Divider from "@material-ui/core/Divider";
+import AddLocationAltIcon from '@mui/icons-material/AddLocationAlt';
 const useStyles = makeStyles((theme) => ({
   container: {
     width: `30%`,
@@ -65,7 +66,7 @@ export default function TrackingTab(props) {
           </ListItem>
         );
       }
-  
+
   const renderVehicleList = ()=>{
     return (
       <List style={{ paddingBottom: `0` }} component="nav">
@@ -87,12 +88,10 @@ export default function TrackingTab(props) {
                 <Divider />
               <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  {renderVehicle(SpeedIcon, "Velocity:" + v.Velocity + " km/h")}
+                  {renderVehicle(SpeedIcon, "Velocity:" + parseInt(v.Velocity, 10) + " km/h")}
                   {renderVehicle(StorageIcon, "Capacity:" + v.Capacity)}
-                  {renderVehicle(
-                    EmojiTransportationIcon,
-                    "Location:" + v.Longitude + " " + v.Latitude
-                  )}
+                  {renderVehicle(AddLocationAltIcon, "Longitude:" + Number((v.Longitude).toFixed(2)))}
+                    {renderVehicle(AddLocationAltIcon, "Latitude:" + Number((v.Latitude).toFixed(2)))}
                 </List>
               </Collapse>
             </div>
@@ -101,7 +100,7 @@ export default function TrackingTab(props) {
       </List>
     );
   };
-  
+
   const renderRestaurantsList=() => {
      return (
        <List style={{ paddingBottom: `0` }} component="nav">
@@ -122,11 +121,8 @@ export default function TrackingTab(props) {
                <Collapse in={selectedIndex === i} timeout="auto" unmountOnExit>
                  <List component="div" disablePadding>
                    {renderVehicle(ThumbUpIcon, "Votes:" + r.Votes)}
-                   {renderVehicle(MenuBookIcon, "Cuisines::" + r.Cuisines)}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "Location:" + r.Address
-                   )}
+                   {renderVehicle(AddLocationAltIcon, "Longitude:" +Number((parseFloat(r.Longitude)).toFixed(2)))}
+                     {renderVehicle(AddLocationAltIcon, "Latitude:" + Number((parseFloat(r.Latitude)).toFixed(2)))}
                  </List>
                </Collapse>
              </div>
@@ -158,29 +154,13 @@ export default function TrackingTab(props) {
                      ThumbUpIcon,
                      "cart approved at:" + r.order_approved_at
                    )}
-                   {renderVehicle(MenuBookIcon, "Latitude:" + r.Latitude)}
-                   {renderVehicle(MenuBookIcon, "Longtitude:" + r.Longitude)}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "delivery date:" + r.order_request_time
-                   )}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "requested date:" + r.order_request_time
-                   )}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "got package from restaurant date:" +
-                       r.order_restaurant_carrier_date
-                   )}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "restaurantId:" + r.order_restaurant_carrier_restaurantId
-                   )}
-                   {renderVehicle(
-                     EmojiTransportationIcon,
-                     "cart status:" + r.order_status
-                   )}
+                   {renderVehicle(AddLocationAltIcon, "Longitude:" + Number((r.Longitude).toFixed(2)))}
+                   {renderVehicle(AddLocationAltIcon, "Latitude:" + Number((r.Latitude).toFixed(2)))}
+                   {renderVehicle(EmojiTransportationIcon, "delivery date:" + r.order_request_time)}
+                   {renderVehicle(EmojiTransportationIcon, "requested date:" + r.order_request_time)}
+                   {renderVehicle(EmojiTransportationIcon, "got package from restaurant date:" + r.order_restaurant_carrier_date)}
+                   {renderVehicle(EmojiTransportationIcon, "restaurantId:" + r.order_restaurant_carrier_restaurantId)}
+                   {renderVehicle(EmojiTransportationIcon, "cart status:" + r.order_status)}
                  </List>
                </Collapse>
              </div>
@@ -221,7 +201,7 @@ export default function TrackingTab(props) {
                 renderRestaurantsList()):(
                 renderOrderList()
                 ))}
-              
+
             </Paper>
             <Paper>
               <List dense className={classes.root}>

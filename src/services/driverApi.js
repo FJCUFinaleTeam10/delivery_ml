@@ -1,5 +1,9 @@
 import axiosClient from "./axiosClient"
 const  driverApi={
+    getDriverBaseOnID: (params)=>{
+        const url = `/driver/getdriverbaseonid/`;
+        return axiosClient.post(url,{params});
+    },
     getAll:(params)=>{
         const url = `/driver/getalldriver/`;
         return axiosClient.post(url,{params});
