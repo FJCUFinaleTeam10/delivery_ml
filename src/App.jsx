@@ -12,50 +12,55 @@ import Driver from './page/driver/';
 import Setting from './page/Setting';
 import  Order from './page/order/';
 import  Statistic from  './page/statistic';
+import History from './page/History';
 require('dotenv').config();
 
 export default function App(props) {
   return (
-    <Router>
-      <AppScaffold>
-        <Switch>
-          <Route path="/home" exact>
-            <Home />
-          </Route>
-          <Route path="/login" exact>
-            <Login />
-          </Route>
-          <Route path="/restaurantlist" exact>
-            <RestaurantList />
-          </Route>
-          <Route path="/setting" exact>
-            <Setting />
-          </Route>
-          <Route path="/statistic" exact>
-            <Statistic />
-          </Route>
-          <Route path="/driverList" exact>
-            <Driver/>
-          </Route>
-          <Route path="/orderList" exact>
-            <Order/>
-          </Route>
-          <Route path="/error" exact>
-            <Typography variant="h1" color="error">
-              Something went wrong!!
-              <Link to="/">Home</Link>
-            </Typography>
-          </Route>
-          <Route path="/restaurant/:id" exact>
-            <Restaurants/>
-          </Route>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="*">Page not found!</Route>
-        </Switch>
-      </AppScaffold>
-    </Router>
+
+        <Router>
+          <AppScaffold>
+            <Switch>
+              <Route path="/home" exact>
+                <Home />
+              </Route>
+              <Route path="/login" exact>
+                <Login />
+              </Route>
+              <Route path="/restaurantlist" exact>
+                <RestaurantList />
+              </Route>
+              <Route path="/setting" exact>
+                <Setting />
+              </Route>
+              <Route path="/statistic" exact>
+                <Statistic />
+              </Route>
+              <Route path="/history" exact>
+                <History />
+              </Route>
+              <Route path="/driverList" exact>
+                <Driver/>
+              </Route>
+              <Route path="/orderList" exact>
+                <Order/>
+              </Route>
+              <Route path="/error" exact>
+                <Typography variant="h1" color="error">
+                  Something went wrong!!
+                  <Link to="/">Home</Link>
+                </Typography>
+              </Route>
+              <Route path="/restaurant/:id" exact>
+                <Restaurants/>
+              </Route>
+              <Route path="/" exact>
+                <Home />
+              </Route>
+              <Route path="*">Page not found!</Route>
+            </Switch>
+          </AppScaffold>
+        </Router>
   );
 }
 

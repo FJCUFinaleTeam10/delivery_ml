@@ -9,6 +9,8 @@ import CommuteIcon from "@material-ui/icons/Commute";
 import RestaurantIcon from "@material-ui/icons/Restaurant";
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SettingsIcon from '@mui/icons-material/Settings';
+import TimelineIcon from '@mui/icons-material/Timeline';
+
 import {
   AppBar,
   IconButton,
@@ -289,7 +291,16 @@ function AppScaffold(props) {
 
               </List>
             </Collapse>
-
+            <Tooltip title="History" arrow placement="right">
+              <SimpleLink to="/history">
+                <ListItem className={classes.listItem} button>
+                  <ListItemIcon>
+                    <TimelineIcon/>
+                  </ListItemIcon>
+                  <ListItemText primary="history" />
+                </ListItem>
+              </SimpleLink>
+            </Tooltip>
             <Tooltip title="Setting" arrow placement="right">
               <SimpleLink to="/setting">
                 <ListItem className={classes.listItem} button>
