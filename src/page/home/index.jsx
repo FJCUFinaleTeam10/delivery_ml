@@ -39,7 +39,8 @@ export default function Home() {
   const [selectedCity,setSelectedCity] = useState({
     Latitude: 23.553118,
     Longitude: 121.0211024,
-    City:"Arga"
+    City:"Arga",
+    City_id:1
   });
 
   const [currentTrackingTab,setCurrentTrackingTab] = useState(0);
@@ -52,6 +53,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    console.log(cityList);
     setSelectedCity(cityList[0]);
   }, [cityList]);
 
@@ -70,6 +72,7 @@ export default function Home() {
         try {
           const params = {
             city: selectedCity.City,
+            cityId:selectedCity?.City_id,
           };
           const response = await driverApi.getDriverBaseOnCity(params);
           setDriverList(response);
@@ -81,6 +84,7 @@ export default function Home() {
         try {
           const params = {
             city: selectedCity.City,
+            cityId:selectedCity?.City_id,
           };
           const response = await orderApi.getOrderBaseOnCity(params);
           setOrderList(response);
@@ -94,7 +98,8 @@ export default function Home() {
     async function getRestaurantBaseOnCity() {
       try {
         const params = {
-          city: selectedCity.City,
+          city: selectedCity?.City,
+          cityId:selectedCity?.City_id,
         };
         const response = await restaurantApi.getRestaurantBaseOnCity(params);
         setRestaurantList(response);

@@ -11,6 +11,7 @@ import storeIcon from "../../asset/images/store.png";
 import inventoryIcon from "../../asset/images/delivery.png";
 import CircularLoading from "../../component/CircularLoading";
 import ScheduleTab from "./ScheduleTab";
+import driverApi from "../../services/driverApi";
 const useStyles = makeStyles((theme) => ({
     map: {
         height: `70vh`,
@@ -30,12 +31,12 @@ const limeOptions = { color: 'lime' };
 export default function TableCustomeCell(props) {
 
     const {driver}=props;
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const classes = useStyles();
     const [zoom,setZoom] =useState(10);
     const [distance,setDistance] = useState([]);
     const [selectedIndex,setSelectedIndex] = useState(null);
-
+    const [routeList,setRouteList] = useState([]);
     const handleClickTrackingTabItem=(e,index)=>{
         setSelectedIndex(index);
     }
@@ -52,15 +53,28 @@ export default function TableCustomeCell(props) {
         iconSize: new L.Point(60, 75),
     });
     useEffect(()=>{
-        let tmp = driver.Route.map((node) => {return [node.Latitude, node.Longitude]});
-        tmp.unshift([driver.Latitude,driver.Longitude]);
-        setDistance(tmp);
-        console.log(tmp);
-        console.log(driver.Route);
-    },[]);
+        if(open){
+            async function fetch_route_list(){
+                try {
+                    const params = {
+                        driverID : driver.Driver_ID
+                    }
+                    console.log(params);
+                    const response = await  driverApi.getCurrentRoute(params);
+                    setRouteList(...[response]);
+                } catch (error) {
+                    console.log(error);
+                }
+            };
+            fetch_route_list();
+        }
+    },[open]);
     useEffect(()=>{
         console.log(distance);
     },[distance])
+    useEffect(()=>{
+        console.log(routeList);
+    },[routeList])
 
     return (
                 <React.Fragment>
@@ -86,7 +100,6 @@ export default function TableCustomeCell(props) {
                     <TableRow>
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={open} timeout="auto" unmountOnExit>
-                                {distance.length>0?(
                                     <React.Fragment>
                                         <MapContainer
                                             className={classes.map}
@@ -102,7 +115,7 @@ export default function TableCustomeCell(props) {
                                                 icon={iconTruck}
                                                 position={[driver.Latitude, driver.Longitude]}
                                             />
-                                            {driver.Route.map(
+                                            {routeList.map(
                                                 (node) =>
                                                     node.Latitude &&
                                                     node.Longitude && (
@@ -114,16 +127,13 @@ export default function TableCustomeCell(props) {
                                             }
                                             <Polyline pathOptions={limeOptions} positions={distance} />
                                         </MapContainer>
+
                                         <ScheduleTab
-                                            scheduleList={driver.Route}
+                                            scheduleList={routeList}
                                             selectedIndex={selectedIndex}
                                             handleClickTrackingTabItem={handleClickTrackingTabItem}
                                         />
                                     </React.Fragment>
-
-                                ):(
-                                    <CircularLoading />
-                                )}
                             </Collapse>
                         </TableCell>
                     </TableRow>

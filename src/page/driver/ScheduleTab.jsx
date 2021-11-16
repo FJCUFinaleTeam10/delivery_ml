@@ -59,6 +59,42 @@ export default function ScheduleTab(props) {
             </ListItem>
         );
     }
+    const renderScheduleTab=()=>{
+        return scheduleList.map((r, index) => (
+                    <div key={index}>
+                        <ListItem
+                            button
+                            onClick={(e) => handleClickTrackingTabItem(e, index)}
+                        >
+                            <ListItemIcon>
+                                {r.nodeType==0?<StoreIcon />:<CardTravelIcon />}
+                            </ListItemIcon>
+                            <ListItemText primary={`position ${index}`} />
+                            {selectedIndex === index ? <ExpandLess /> : <ExpandMore />}
+                        </ListItem>
+                        <Collapse in={selectedIndex === index} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                {renderVehicle(
+                                    EmojiTransportationIcon,
+                                    "restaurantId:" + r.order_restaurant_carrier_restaurantId
+                                )}
+                                {renderVehicle(
+                                    EmojiTransportationIcon,
+                                    "order Id:" + r.order_restaurant_carrier_restaurantId
+                                )}
+                                {renderVehicle(
+                                    EmojiTransportationIcon,
+                                    "Longitude:" + r.order_restaurant_carrier_restaurantId
+                                )}
+                                {renderVehicle(
+                                    EmojiTransportationIcon,
+                                    "Latitude:" + r.order_restaurant_carrier_restaurantId
+                                )}
+
+                            </List>
+                        </Collapse>
+                    </div>
+                ))}
     return (
         <div className={classes.container}>
             <ExpansionPanel defaultExpanded>
@@ -73,41 +109,12 @@ export default function ScheduleTab(props) {
                         <Paper className={classes.borderBottom}>
                             <List style={{ paddingBottom: `0` }} component="nav">
                                 <div style={{ height: `300px`, overflowY: `auto` }}>
-                                    {scheduleList.map((r, index) => (
-                                        <div key={index}>
-                                            <ListItem
-                                                button
-                                                onClick={(e) => handleClickTrackingTabItem(e, index)}
-                                            >
-                                                <ListItemIcon>
-                                                    {r.nodeType==0?<StoreIcon />:<CardTravelIcon />}
-                                                </ListItemIcon>
-                                                <ListItemText primary={`position ${index}`} />
-                                                {selectedIndex === index ? <ExpandLess /> : <ExpandMore />}
-                                            </ListItem>
-                                            <Collapse in={selectedIndex === index} timeout="auto" unmountOnExit>
-                                                <List component="div" disablePadding>
-                                                    {renderVehicle(
-                                                        EmojiTransportationIcon,
-                                                        "restaurantId:" + r.order_restaurant_carrier_restaurantId
-                                                    )}
-                                                    {renderVehicle(
-                                                        EmojiTransportationIcon,
-                                                        "order Id:" + r.order_restaurant_carrier_restaurantId
-                                                    )}
-                                                    {renderVehicle(
-                                                        EmojiTransportationIcon,
-                                                        "Longitude:" + r.order_restaurant_carrier_restaurantId
-                                                    )}
-                                                    {renderVehicle(
-                                                        EmojiTransportationIcon,
-                                                        "Latitude:" + r.order_restaurant_carrier_restaurantId
-                                                    )}
+                                    {scheduleList.length>0?(
+                                        {renderScheduleTab}
+                                       ):(
+                                            <Typography>empty list</Typography>
+                                    )}
 
-                                                </List>
-                                            </Collapse>
-                                        </div>
-                                    ))}
                                 </div>
                             </List>
                         </Paper>

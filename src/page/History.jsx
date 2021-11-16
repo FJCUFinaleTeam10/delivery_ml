@@ -39,6 +39,7 @@ import { DateTime } from 'luxon';
 import Typography from '@material-ui/core/Typography';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
+
 import {
     useNativeSelect,
     useVehicleData,
@@ -129,7 +130,7 @@ export default () => {
     const [data, setData] = useState([]);
     const polyline = data.filter(i => i.lat && i.long).map(d => [d.lat, d.long]);
     const [vehiclePos, setVehiclePos] = useState(polyline[0]);
-    const [currentSelectedCity,setCurrentSelectedCity]= useState(null);
+    const [currentSelectedCity,setCurrentSelectedCity]= useState(0);
     const [viewport, setViewport] = useState({
         center: currentSelectedCity || taipei,
         zoom: 15,
@@ -149,8 +150,6 @@ export default () => {
     const [isRunning, setIsRunning] = useState(false);
     const [cityList,setCityList] = useState([]);
 
-
-
     useEffect(()=>{
             async function fetchCity(){
                 const response = await geolocationApi.getAllCity();
@@ -160,28 +159,31 @@ export default () => {
     },[]);
 
     useEffect(()=>{
-        setCurrentSelectedCity(cityList[0]);
-        setViewport()
+        setViewport();
     },[cityList]);
+    useEffect(()=>{
+        console.log(currentSelectedCity);
+    },[currentSelectedCity]);
+
 
     function resolveStatus(i) {
         let status;
         if (i.acc && i.speed > 0) {
-            status = t('Running', '行駛中車輛');
+            status = t('Running', 'Running');
         } else if (i.acc && i.speed === 0) {
-            status = t('Temporary Halt', '暫停車輛');
+            status = t('Temporary Halt', 'Temporary Halt');
         } else {
-            status = t('Parking', '停泊中車輛');
+            status = t('Parking', 'Parking');
         }
         return status;
     }
     const columns = [
         { title: t('ID','ID'), field: 'id' },
-        { title: t('Status','狀態'), render: rowData => resolveStatus(rowData)},
-        { title: t(`Time`, '時間'), field: '_trackerTime' },
-        { title: t('Speed', '速度'), field: 'speed' },
-        { title: t('Traveled kilometers', '里程'), field: 'traveledKilometers' },
-        { title: t('Address', '地點'), field: 'address' }
+        { title: t('Status','Status'), render: rowData => resolveStatus(rowData)},
+        { title: t(`Time`, 'Time'), field: '_trackerTime' },
+        { title: t('Speed', 'Speed'), field: 'speed' },
+        { title: t('Traveled kilometers', 'Traveled kilometers'), field: 'traveledKilometers' },
+        { title: t('Address', 'ddress'), field: 'address' }
     ];
     useInterval(() => {
         const next = polyline[index + 1];
@@ -247,7 +249,7 @@ export default () => {
                     <ListItem>
                         <KeyboardDateTimePicker
                             {...from}
-                            label={t('From','自')}
+                            label={t('From','From')}
                             // 8 Jan 2020, foxeye.rinx:
                             // event there is no error, the component still call this
                             // onError={console.error}
@@ -259,7 +261,7 @@ export default () => {
                     <ListItem>
                         <KeyboardDateTimePicker
                             {...to}
-                            label={t('To','至')}
+                            label={t('To','To')}
                             // 8 Jan 2020, foxeye.rinx:
                             // event there is no error, the component still call this
                             // onError={console.error}
@@ -269,77 +271,36 @@ export default () => {
                         />
                     </ListItem>
                     <ListItem>
-                        {/* <FormControl className={classes.formControl}>
-                            <InputLabel htmlFor="select-vehicle">{t('Select Vehicle', '選擇車輛')}</InputLabel>
-                            <Select
-                                {...select}
-                                native
-                                labelId="select-vehicle"
-                            >
-                                <option value="" />
-                                {fleets.map((fleet, index) => (
-                                    <optgroup key={index} label={fleet.fleetName}>
-                                        {fleet.vehicles.map(
-                                            ({registrationNumber: r}, i) => (<option key={r} value={r}>{r}</option>)
-                                        )}
-                                    </optgroup>
-                                ))}
-                            </Select>
-                        </FormControl> */}
-                    </ListItem>
-                    <ListItem>
                         <Grid container spacing={5}>
                             <Grid item>
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="select-vehicle">{t('Select City', 'Select City')}</InputLabel>
                                     <Select
-                                        {...select}
+                                        {...cityList[currentSelectedCity]}
                                         native
-                                        labelId="select-vehicle"
+                                        labelId="select-city"
                                     >
                                         <option value="" />
-                                        {fleets &&
-                                        <React.Fragment>
-                                            {fleets.map((fleet, index) => (
-                                                <optgroup key={index} label={fleet.fleetName}>
-                                                    {fleet.vehicles.map(
-                                                        ({registrationNumber: r}, i) => (<option key={r} value={r}>{r}</option>)
-                                                    )}
-                                                </optgroup>
-                                            ))}
-                                        </React.Fragment>
-                                        }
-                                    </Select>
-                                    <InputLabel htmlFor="select-vehicle">{t('Select Vehicle', '選擇車輛')}</InputLabel>
-                                    <Select
-                                        {...select}
-                                        native
-                                        labelId="select-vehicle"
-                                    >
-                                        <option value="" />
-                                        {fleets &&
-                                        <React.Fragment>
-                                            {fleets.map((fleet, index) => (
-                                                <optgroup key={index} label={fleet.fleetName}>
-                                                    {fleet.vehicles.map(
-                                                        ({registrationNumber: r}, i) => (<option key={r} value={r}>{r}</option>)
-                                                    )}
-                                                </optgroup>
-                                            ))}
-                                        </React.Fragment>
-                                        }
+                                        {/*{cityList &&*/}
+                                        {/*<React.Fragment>*/}
+                                        {/*    {cityList?.map((city, index) => (*/}
+                                        {/*        <optgroup key={index} label={city?.City_Name}>*/}
+                                        {/*            {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)*/}
+                                        {/*            )}*/}
+                                        {/*        </optgroup>*/}
+                                        {/*    ))}*/}
+                                        {/*</React.Fragment>*/}
+                                        {/*}*/}
                                     </Select>
                                 </FormControl>
                             </Grid>
                             <Grid item>
                                 <TextField
-                                    label={t('Speed limit', '速限')}
+                                    label={t('Speed limit', 'Speed limit')}
                                     type="number"
                                     style={{maxWidth: 120}}
                                     defaultValue={speedLimit}
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
+                                    InputLabelProps={{shrink: true}}
                                     InputProps={{
                                         endAdornment: <InputAdornment position="end"> km/h </InputAdornment>
                                     }}
@@ -356,14 +317,14 @@ export default () => {
                             className={classes.button}
                             onClick={submit}
                         >
-                            {t('Load Report', '負荷報告')}
+                            {t('Load ', 'Load ')}
                         </Button>
                     </ListItem>
                     <ListItem>
                         <Grid container spacing={2} alignItems="center">
                             <Grid item>
                                 <Typography gutterBottom>
-                                    {t('Fast', '快')}
+                                    {t('Fast', 'Fast')}
                                 </Typography>
                             </Grid>
                             <Grid item xs>
@@ -380,7 +341,7 @@ export default () => {
                             </Grid>
                             <Grid item xs>
                                 <Typography gutterBottom>
-                                    {t('Slow', '慢')}
+                                    {t('Slow', 'Slow')}
                                 </Typography>
                             </Grid>
                             <PlayButton
@@ -398,7 +359,7 @@ export default () => {
                 </List>
                 <Divider />
                 <ModifiedMatTable
-                    title={t('History Data', '歷史回放')}
+                    title={t('History Data', 'History Data')}
                     columns={columns}
                     data={data}
                     options={{
@@ -437,13 +398,13 @@ export default () => {
                         icon={L.icon({ iconUrl: startIcon })}
                         position={polyline[0]}
                     >
-                        <Tooltip permanent direction='left'>{t('Start point', '起點')}</Tooltip>
+                        <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>
                     </Marker>}
                     {polyline[polyline.length - 1] && <Marker
                         icon={L.icon({ iconUrl: endIcon })}
                         position={polyline[polyline.length - 1]}
                     >
-                        <Tooltip permanent direction='left'>{t('End point', '終點')}</Tooltip>
+                        <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
                     </Marker>}
                     {vehiclePos && <DriftMarker
                         // if position changes, marker will drift its way to new position

@@ -27,7 +27,8 @@ export default function Order() {
     const [selectedCity,setSelectedCity] = useState({
         Latitude: 23.553118,
         Longitude: 121.0211024,
-        City:"Agra"
+        City:"Agra",
+        City_id :1
     });
 
     useEffect(()=>{
@@ -50,7 +51,8 @@ export default function Order() {
                 const params = {
                     skip: currentPage,
                     limit: pageSize,
-                    city: selectedCity.City,
+                    city: selectedCity?.City,
+                    cityId: selectedCity?.City_id,
                 }
                 console.log(params);
                 const response = await   orderApi.getOrderBaseOnCity(params);
@@ -71,16 +73,12 @@ export default function Order() {
     const handleClick = ()=>{
 
     }
-    const handleChangePage = (e,pageNumber)=>{
-        setCurrentPage(pageNumber);
-    }
+    const handleChangePage = (e,pageNumber)=>{setCurrentPage(pageNumber);}
     const handleChangeRowsPerPage=(e)=>{
         console.log(e);
         setPageSize(e.target.value);
     }
-    const handleChangeSearch=()=>{
-
-    }
+    const handleChangeSearch=()=>{}
     const classes = useStyles();
 
     const renderSearch = ()=>{
