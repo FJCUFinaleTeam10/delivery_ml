@@ -128,11 +128,8 @@ export default function Order() {
                                 <TableCell align="right">Requested Time</TableCell>
                                 <TableCell align="right">Get Package Time</TableCell>
                                 <TableCell align="right">Restaurant Id</TableCell>
-                                {/*<TableCell align="right">customer phone number</TableCell>*/}
                                 <TableCell align="right">Driver Id</TableCell>
                                 <TableCell align="right">Order Status</TableCell>
-                                {/*<TableCell align="right">Qtable position</TableCell>*/}
-                                {/*<TableCell align="right">Qtable updated</TableCell>*/}
                             </TableRow>
                         </TableHead>
                         <TableBody>

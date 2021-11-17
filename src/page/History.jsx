@@ -51,6 +51,7 @@ import { createAxios, useNoti } from '../services';
 import { KeyboardDateTimePicker } from '@material-ui/pickers';
 import L from 'leaflet';
 import geolocationApi from "../services/geolocationApi";
+import MenuItem from "@mui/material/MenuItem";
 
 const MySlider = withStyles({
     root: {
@@ -160,6 +161,8 @@ export default () => {
 
     useEffect(()=>{
         setViewport();
+        console.log(cityList);
+        setCurrentSelectedCity(cityList[0]);
     },[cityList]);
     useEffect(()=>{
         console.log(currentSelectedCity);
@@ -203,6 +206,10 @@ export default () => {
     const handleDrawerOpen = () => {setOpen(true);};
     const handleDrawerClose = () => {setOpen(false);};
     const onViewportChanged = (viewport) => {setViewport(viewport)}
+    const handleChangeCity=(event)=>{
+        setCurrentSelectedCity(event.target.value);
+
+    }
     const submit = async (event) => {
         try {
             const response = await axios.get(`/journey-detail-report`, {
@@ -276,21 +283,19 @@ export default () => {
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="select-vehicle">{t('Select City', 'Select City')}</InputLabel>
                                     <Select
-                                        {...cityList[currentSelectedCity]}
                                         native
                                         labelId="select-city"
+                                        value={cityList[currentSelectedCity]?.City}
+                                        onChange={handleChangeCity}
                                     >
-                                        <option value="" />
-                                        {/*{cityList &&*/}
-                                        {/*<React.Fragment>*/}
-                                        {/*    {cityList?.map((city, index) => (*/}
-                                        {/*        <optgroup key={index} label={city?.City_Name}>*/}
-                                        {/*            {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)*/}
-                                        {/*            )}*/}
-                                        {/*        </optgroup>*/}
-                                        {/*    ))}*/}
-                                        {/*</React.Fragment>*/}
-                                        {/*}*/}
+                                        {cityList.map((city, index) =>{
+                                                // <optgroup key={index} label={city?.City_Name}>
+                                                //     {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)
+                                                //     )}
+                                                // </optgroup>
+                                            return <MenuItem value={index}>city.City</MenuItem>
+                                        })
+                                        }
                                     </Select>
                                 </FormControl>
                             </Grid>
