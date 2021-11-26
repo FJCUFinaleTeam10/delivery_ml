@@ -166,7 +166,15 @@ export default () => {
     },[cityList]);
     useEffect(()=>{
         console.log(currentSelectedCity);
+        setViewport({
+            center: [cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude],
+            zoom: 15,
+        });
     },[currentSelectedCity]);
+    useEffect(()=>{
+        console.log(viewport);
+
+    },[viewport]);
 
 
     function resolveStatus(i) {
@@ -206,10 +214,8 @@ export default () => {
     const handleDrawerOpen = () => {setOpen(true);};
     const handleDrawerClose = () => {setOpen(false);};
     const onViewportChanged = (viewport) => {setViewport(viewport)}
-    const handleChangeCity=(event)=>{
-        setCurrentSelectedCity(event.target.value);
+    const handleChangeCity=(event)=>{setCurrentSelectedCity(event.target.value);}
 
-    }
     const submit = async (event) => {
         try {
             const response = await axios.get(`/journey-detail-report`, {
@@ -283,19 +289,19 @@ export default () => {
                                 <FormControl className={classes.formControl}>
                                     <InputLabel htmlFor="select-vehicle">{t('Select City', 'Select City')}</InputLabel>
                                     <Select
-                                        native
+                                        // native
                                         labelId="select-city"
                                         value={cityList[currentSelectedCity]?.City}
                                         onChange={handleChangeCity}
                                     >
-                                        {cityList.map((city, index) =>{
+                                        {cityList?.map((city, index) =>(
                                                 // <optgroup key={index} label={city?.City_Name}>
                                                 //     {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)
                                                 //     )}
                                                 // </optgroup>
-                                            return <MenuItem value={index}>city.City</MenuItem>
-                                        })
-                                        }
+                                            <MenuItem value={index}>{city?.City}</MenuItem>
+
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -397,6 +403,7 @@ export default () => {
                         zoomControl="false"
                         maxZoom="28"
                         attribution="&copy; Jasslin Map"
+                        center={viewport}
                     />
                     {polyline[0] && <Polyline color="red" positions={polyline} />}
                     {polyline[0] && <Marker

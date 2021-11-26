@@ -94,7 +94,7 @@ export default function Home() {
       }
       getOrderBaseOnCity();
       getDriverBaseOnCity();
-    }, 1000)
+    }, 10000)
     async function getRestaurantBaseOnCity() {
       try {
         const params = {
