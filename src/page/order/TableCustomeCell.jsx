@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {
     Collapse,
-    makeStyles,
+    makeStyles, Paper,
     TableCell,
 } from "@material-ui/core";
 import TableRow from "@material-ui/core/TableRow";
@@ -30,6 +30,7 @@ import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import HotelIcon from '@mui/icons-material/Hotel';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import Grid from "@material-ui/core/Grid";
+
 const useStyles = makeStyles((theme) => ({
     map: {
         height: `70vh`,
@@ -87,7 +88,7 @@ export default function TableCustomeCell(props) {
         if(openCollapse){
             async function getTargetDriver(){
                 try {
-                    const response = await  driverApi.getDriverBaseOnID({driverId:order?.driver_id});
+                    const response = await  driverApi.getDriverBaseOnID({driverId:parseInt(order?.driver_id)});
                     setDriverList(response);
                 } catch (error) {
                     console.log(error);
@@ -107,9 +108,17 @@ export default function TableCustomeCell(props) {
     },[openCollapse]);
     useEffect(()=>{
         if(driverList.length>0 && restaurantList.length>0){
-            setDistance( [[driverList[0]?.Latitude,driverList[0]?.Longitude]]);
-            setDistance( distance => [...distance, [parseFloat(restaurantList[0]?.Latitude), parseFloat(restaurantList[0]?.Longitude)]]);
-            setDistance(distance => [...distance, [order?.Latitude,order?.Longitude]]);
+            if( order.order_status<2) {
+                setDistance( [[order.Latitude,order?.Longitude]]);
+            }
+            else if (order<3) {
+                setDistance( [[driverList[0]?.Latitude,driverList[0]?.Longitude]]);
+                setDistance( distance => [...distance, [parseFloat(restaurantList[0]?.Latitude), parseFloat(restaurantList[0]?.Longitude)]]);
+                setDistance(distance => [...distance, [order?.Latitude,order?.Longitude]]);
+            }
+            else {
+
+            }
         }
     },[driverList,order,restaurantList]);
 
@@ -145,11 +154,16 @@ export default function TableCustomeCell(props) {
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={openCollapse} timeout="auto" unmountOnExit>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={3}>
-                                        <OrderTimeline
-                                        orderInfo = {order}
-                                        />
-                                    </Grid>
+                                    <Paper
+                                        elevation={1}
+                                    >
+                                        <Grid item xs={3}>
+                                            <OrderTimeline
+                                                orderInfo = {order}
+                                            />
+                                        </Grid>
+                                    </Paper>
+
                                     <Grid item xs={3}>
                                         <MapContainer
                                             className={classes.map}

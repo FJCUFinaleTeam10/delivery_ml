@@ -10,8 +10,51 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import HotelIcon from '@mui/icons-material/Hotel';
 import RepeatIcon from '@mui/icons-material/Repeat';
+import RotateRightIcon from '@mui/icons-material/RotateRight';
+import TimerIcon from '@mui/icons-material/Timer';
 import Typography from '@mui/material/Typography';
 import {useEffect} from "react";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
+function  timeLineIcon(orderStatus,require){
+    return(
+        <React.Fragment>
+            {
+                parseInt(orderStatus)>require?
+                    <CheckCircleIcon
+                        color={'success'}
+                    />
+                    :parseInt(orderStatus)==require?
+                        <RotateRightIcon
+                            color={'warning'}
+                        />:
+                        <TimerIcon
+                            color={'disabled'}
+                        />
+            }
+        </React.Fragment>
+    );
+}
+function  timeLineStatus(orderStatus,require,time){
+    return(
+        <React.Fragment>
+            {
+                parseInt(orderStatus)>require?(
+                    <React.Fragment>
+                        <Typography>Completed at:</Typography>
+                        <Typography>{time}</Typography>
+                    </React.Fragment>
+                ):(
+                    parseInt(orderStatus)==require?(
+                        <Typography>Executing</Typography>
+                    ):(
+                        <Typography>waiting</Typography>
+                    )
+                )
+            }
+        </React.Fragment>
+    );
+}
 
 export default function OrderTimeline(props) {
     const {orderInfo} = props;
@@ -22,7 +65,7 @@ export default function OrderTimeline(props) {
     }, [orderInfo]);
 
     return (
-        <Timeline position="alternate">
+        <Timeline position="right">
             <TimelineItem>
                 <TimelineOppositeContent
                     sx={{ m: 'auto 0' }}
@@ -30,14 +73,13 @@ export default function OrderTimeline(props) {
                     variant="body2"
                     color="text.secondary"
                 >
-                    <Typography>Completed at:</Typography>
-                    <Typography>{orderInfo.order_request_time}</Typography>
+                    {
+                        timeLineStatus(orderInfo.order_status,parseInt(-1),orderInfo.order_request_time)
+                    }
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
-                    <TimelineDot>
-                        <FastfoodIcon />
-                    </TimelineDot>
+                        {timeLineIcon(orderInfo.order_status,-1)}
                     <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
@@ -52,14 +94,15 @@ export default function OrderTimeline(props) {
                     variant="body2"
                     color="text.secondary"
                     align="right"
-                >
-                    <Typography>Completed at:</Typography>
-                    <Typography>{orderInfo.order_approved_at}</Typography>
+                >{
+                    timeLineStatus(orderInfo.order_status,-1,orderInfo.order_approved_at)
+                }
+
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
                     <TimelineDot color="primary">
-                        <LaptopMacIcon />
+                        {timeLineIcon(orderInfo.order_status,1)}
                     </TimelineDot>
                     <TimelineConnector />
                 </TimelineSeparator>
@@ -74,13 +117,12 @@ export default function OrderTimeline(props) {
                     color="text.secondary"
                     align="right"
                 >
-                    <Typography>Completed at:</Typography>
-                    <Typography>{orderInfo.order_restaurant_carrier_date}</Typography>
+                    {timeLineStatus(orderInfo.order_status,3,orderInfo.order_restaurant_carrier_date)}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
                     <TimelineDot color="primary" variant="outlined">
-                        <HotelIcon />
+                        {timeLineIcon(orderInfo.order_status,1)}
                     </TimelineDot>
                     <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
                 </TimelineSeparator>
@@ -95,15 +137,13 @@ export default function OrderTimeline(props) {
                     color="text.secondary"
                     align="right"
                 >
-                    <Typography>Completed at:</Typography>
-                    <Typography>{orderInfo.order_delivered_customer_date}</Typography>
+                    {timeLineStatus(orderInfo.order_status,parseInt(3),orderInfo.order_delivered_customer_date)}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
                     <TimelineDot color="primary" variant="outlined">
-                        <HotelIcon />
+                        {timeLineIcon(orderInfo.order_status,parseInt(3))}
                     </TimelineDot>
-                    <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
                     <Typography>Arriverd Customer Time</Typography>
