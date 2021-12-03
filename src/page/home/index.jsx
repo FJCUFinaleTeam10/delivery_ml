@@ -75,7 +75,7 @@ export default function Home() {
             cityId:selectedCity?.City_id,
           };
           const response = await driverApi.getDriverBaseOnCity(params);
-          setDriverList(response);
+          setDriverList(response['data']);
         } catch (e) {
           console.log(e);
         }

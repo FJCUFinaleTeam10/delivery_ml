@@ -46,9 +46,12 @@ export default function ScheduleTab(props) {
     const {scheduleList} = props;
     const {selectedIndex} = props;
     const {handleClickTrackingTabItem} = props;
+    const {itemOpenList} = props;
     useEffect(()=>{
         console.log(scheduleList);
-    },[]);
+    },[scheduleList]);
+
+
     function renderVehicle(Icon, text) {
         return (
             <ListItem className={classes.nested}>
@@ -59,42 +62,7 @@ export default function ScheduleTab(props) {
             </ListItem>
         );
     }
-    const renderScheduleTab=()=>{
-        return scheduleList.map((r, index) => (
-                    <div key={index}>
-                        <ListItem
-                            button
-                            onClick={(e) => handleClickTrackingTabItem(e, index)}
-                        >
-                            <ListItemIcon>
-                                {r.nodeType==0?<StoreIcon />:<CardTravelIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={`position ${index}`} />
-                            {selectedIndex === index ? <ExpandLess /> : <ExpandMore />}
-                        </ListItem>
-                        <Collapse in={selectedIndex === index} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {renderVehicle(
-                                    EmojiTransportationIcon,
-                                    "restaurantId:" + r.order_restaurant_carrier_restaurantId
-                                )}
-                                {renderVehicle(
-                                    EmojiTransportationIcon,
-                                    "order Id:" + r.order_restaurant_carrier_restaurantId
-                                )}
-                                {renderVehicle(
-                                    EmojiTransportationIcon,
-                                    "Longitude:" + r.order_restaurant_carrier_restaurantId
-                                )}
-                                {renderVehicle(
-                                    EmojiTransportationIcon,
-                                    "Latitude:" + r.order_restaurant_carrier_restaurantId
-                                )}
 
-                            </List>
-                        </Collapse>
-                    </div>
-                ))}
     return (
         <div className={classes.container}>
             <ExpansionPanel defaultExpanded>
@@ -110,11 +78,44 @@ export default function ScheduleTab(props) {
                             <List style={{ paddingBottom: `0` }} component="nav">
                                 <div style={{ height: `300px`, overflowY: `auto` }}>
                                     {scheduleList.length>0?(
-                                        {renderScheduleTab}
-                                       ):(
+                                        scheduleList.map((item, i) => {
+                                            return (
+                                                <div key={i}>
+                                                    <ListItem
+                                                        button
+                                                        onClick={(e) => handleClickTrackingTabItem(e, i)}
+                                                    >
+                                                        <ListItemIcon>
+                                                            {item.nodetype==0?<StoreIcon />:<CardTravelIcon />}
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={`order ${item.Order_ID} ${item.nodetype==0?("restaurant"):("destination")}`} />
+                                                        {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
+                                                    </ListItem>
+                                                    <Collapse in={itemOpenList[i]} timeout="auto" unmountOnExit>
+                                                        <List component="div" disablePadding>
+                                                            {renderVehicle(
+                                                                EmojiTransportationIcon,
+                                                                "restaurantId:" + item.Restaurant_ID
+                                                            )}
+                                                            {renderVehicle(
+                                                                EmojiTransportationIcon,
+                                                                "order Id:" + item.Order_ID
+                                                            )}
+                                                            {renderVehicle(
+                                                                EmojiTransportationIcon,
+                                                                "Longitude:" + item.Longitude
+                                                            )}
+                                                            {renderVehicle(
+                                                                EmojiTransportationIcon,
+                                                                "Latitude:" + item.Latitude
+                                                            )}
+
+                                                        </List>
+                                                    </Collapse>
+                                                </div>
+                                       )})):(
                                             <Typography>empty list</Typography>
                                     )}
-
                                 </div>
                             </List>
                         </Paper>

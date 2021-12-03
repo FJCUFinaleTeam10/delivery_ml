@@ -28,6 +28,7 @@ export default function Driver() {
   const [currentPage,setCurrentPage] = useState(0);
   const [pageSize,setPageSize] = useState(10);
   const [cityList,setCityList] = useState([]);
+  const [total,setTotal] = useState(null);
   const [selectedCity,setSelectedCity] = useState({
     Latitude: 23.553118,
     Longitude: 121.0211024,
@@ -45,7 +46,7 @@ export default function Driver() {
 
   useEffect(()=>{
     console.log(cityList);
-    setSelectedCity(cityList[0]?.City);
+    setSelectedCity(cityList[0]?.City_id);
   },[cityList]);
 
   useEffect(()=>{
@@ -55,11 +56,12 @@ export default function Driver() {
         const params = {
           skip: currentPage,
           limit: pageSize,
-          city: selectedCity,
+          cityId: selectedCity
         }
         console.log(params);
         const response = await  driverApi.getDriverBaseOnCity(params);
-        setDriverList(response);
+        setDriverList(response['data']);
+        setTotal(response['count']);
       } catch (error) {
         console.log(error);
       }
@@ -76,9 +78,7 @@ export default function Driver() {
   },[driverList]);
 
 
-  const handleClick = ()=>{
-
-  }
+  const handleClick = ()=>{}
   const handleChangePage = (e,pageNumber)=>{
     setCurrentPage(pageNumber);
   }
@@ -103,7 +103,7 @@ export default function Driver() {
                     helperText="select country"
                 >
                   {cityList.map((city,index) => (
-                      <MenuItem key={index} value={city.City}>
+                      <MenuItem key={index} value={city.City_id}>
                         {city.City}
                       </MenuItem>
                   ))}
@@ -148,7 +148,7 @@ export default function Driver() {
         </Table>
         </TableContainer>
         <TablePagination component="div"
-        count={driverList.length}
+        count={total}
         page={currentPage}
         onPageChange={(e,pageNumber)=>handleChangePage(e,pageNumber)}
         rowsPerPage={pageSize}

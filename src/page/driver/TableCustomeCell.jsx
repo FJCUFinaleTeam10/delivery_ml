@@ -37,8 +37,12 @@ export default function TableCustomeCell(props) {
     const [distance,setDistance] = useState([]);
     const [selectedIndex,setSelectedIndex] = useState(null);
     const [routeList,setRouteList] = useState([]);
+    const [openItemList,setOpenItemList] = useState([]);
+
     const handleClickTrackingTabItem=(e,index)=>{
-        setSelectedIndex(index);
+        let newOpenList = [...openItemList];
+        newOpenList[index] = !newOpenList[index];
+        setOpenItemList(newOpenList);
     }
     const iconTruck = new L.Icon({
         iconUrl: LocalShippingIcon,
@@ -56,25 +60,26 @@ export default function TableCustomeCell(props) {
         if(open){
             async function fetch_route_list(){
                 try {
-                    const params = {
+                    const response = await  driverApi.getCurrentRoute({
                         driverID : driver.Driver_ID
-                    }
-                    console.log(params);
-                    const response = await  driverApi.getCurrentRoute(params);
-                    setRouteList(...[response]);
+                    });
+                    console.log(response);
+                    setRouteList(response);
                 } catch (error) {
                     console.log(error);
                 }
             };
             fetch_route_list();
+            setOpenItemList(new Array(routeList).fill(false));
         }
     },[open]);
     useEffect(()=>{
-        console.log(distance);
-    },[distance])
-    useEffect(()=>{
-        console.log(routeList);
-    },[routeList])
+        let tmp = [[driver.Latitude,driver.Longitude]];
+        if(routeList.length>0){
+            [...routeList].map((routeNode)=>{tmp.push([routeNode.Latitude,routeNode.Longitude])});
+        }
+        setDistance(tmp);
+    },[routeList,driver])
 
     return (
                 <React.Fragment>
@@ -100,6 +105,7 @@ export default function TableCustomeCell(props) {
                     <TableRow>
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={open} timeout="auto" unmountOnExit>
+                                {routeList.length>0?(
                                     <React.Fragment>
                                         <MapContainer
                                             className={classes.map}
@@ -120,7 +126,7 @@ export default function TableCustomeCell(props) {
                                                     node.Latitude &&
                                                     node.Longitude && (
                                                         <Marker
-                                                            icon={node.nodeType==1?iconOrder:iconRestaurant}
+                                                            icon={node.nodetype==1?iconOrder:iconRestaurant}
                                                             position={[node.Latitude, node.Longitude]}
                                                         />
                                                     ))
@@ -132,12 +138,15 @@ export default function TableCustomeCell(props) {
                                             scheduleList={routeList}
                                             selectedIndex={selectedIndex}
                                             handleClickTrackingTabItem={handleClickTrackingTabItem}
+                                            itemOpenList={openItemList}
                                         />
                                     </React.Fragment>
+                                ):(
+                                    <CircularLoading/>
+                                    )}
                             </Collapse>
                         </TableCell>
                     </TableRow>
-
                 </React.Fragment>
     );
 }

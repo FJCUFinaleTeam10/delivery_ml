@@ -11,7 +11,7 @@ import {
     TileLayer,
     Polyline,
     Marker,
-    Tooltip
+    Tooltip, useMap
 } from 'react-leaflet';
 import { DriftMarker } from 'leaflet-drift-marker';
 import 'leaflet/dist/leaflet.css';
@@ -39,7 +39,7 @@ import { DateTime } from 'luxon';
 import Typography from '@material-ui/core/Typography';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
-
+import "leaflet/dist/leaflet.css";
 import {
     useNativeSelect,
     useVehicleData,
@@ -80,7 +80,7 @@ const useStyles = makeStyles(theme => createStyles({
         display: 'flex',
     },
     map: {
-        height: `80vh`
+        height: `90vh`
     },
     formControl: {
         minWidth: 150
@@ -124,18 +124,21 @@ const useStyles = makeStyles(theme => createStyles({
     }
 }));
 
-const taipei = [25.105497, 121.597366];
+const initCenter = [23.553118, 121.0211024];
+
+function ChangeView({ center, zoom }) {
+    const map = useMap();
+    map.setView(center, zoom);
+    return null;
+}
+
 export default () => {
     const classes = useStyles();
     const [speedLimit, setSpeedLimit] = useState(70);
     const [data, setData] = useState([]);
     const polyline = data.filter(i => i.lat && i.long).map(d => [d.lat, d.long]);
-    const [vehiclePos, setVehiclePos] = useState(polyline[0]);
-    const [currentSelectedCity,setCurrentSelectedCity]= useState(0);
-    const [viewport, setViewport] = useState({
-        center: currentSelectedCity || taipei,
-        zoom: 15,
-    });
+    const [currentSelectedCity,setCurrentSelectedCity]= useState(null);
+    const [center,setCenter] = useState(initCenter);
     const [open, setOpen] = useState(true);
     const [delay, setDelay] = useState(50);
     const [index, setIndex] = useState(0);
@@ -148,6 +151,7 @@ export default () => {
     const select = useNativeSelect('');
     const from = useDateTimePicker(initialDate);
     const to = useDateTimePicker(new Date());
+
     const [isRunning, setIsRunning] = useState(false);
     const [cityList,setCityList] = useState([]);
 
@@ -160,21 +164,20 @@ export default () => {
     },[]);
 
     useEffect(()=>{
-        setViewport();
         console.log(cityList);
-        setCurrentSelectedCity(cityList[0]);
+        setCurrentSelectedCity(0);
     },[cityList]);
     useEffect(()=>{
-        console.log(currentSelectedCity);
-        setViewport({
-            center: [cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude],
-            zoom: 15,
-        });
-    },[currentSelectedCity]);
-    useEffect(()=>{
-        console.log(viewport);
+        console.log(cityList[currentSelectedCity]);
+        setCenter([cityList[currentSelectedCity]?.Latitude,
+                        cityList[currentSelectedCity]?.Longitude]);
 
-    },[viewport]);
+    },[currentSelectedCity]);
+
+    useEffect(()=>{
+        console.log(center);
+    },[center]);
+
 
 
     function resolveStatus(i) {
@@ -196,16 +199,6 @@ export default () => {
         { title: t('Traveled kilometers', 'Traveled kilometers'), field: 'traveledKilometers' },
         { title: t('Address', 'ddress'), field: 'address' }
     ];
-    useInterval(() => {
-        const next = polyline[index + 1];
-        if (!next) {
-            setIsRunning(false);
-            return;
-        }
-        setVehiclePos(next);
-        // setViewport(prev => ({ ...prev, center: next}));
-        setIndex(index + 1);
-    }, isRunning ? delay : null);
 
     function play() {setIsRunning(true);}
     function pause() {setIsRunning(false);}
@@ -213,8 +206,10 @@ export default () => {
     const handleSpeedLimitChange = (event) => {setSpeedLimit(event.target.value);};
     const handleDrawerOpen = () => {setOpen(true);};
     const handleDrawerClose = () => {setOpen(false);};
-    const onViewportChanged = (viewport) => {setViewport(viewport)}
-    const handleChangeCity=(event)=>{setCurrentSelectedCity(event.target.value);}
+    const handleChangeCity=(event)=>{
+        setCurrentSelectedCity(event.target.value);
+        // ChangeView({});
+    }
 
     const submit = async (event) => {
         try {
@@ -234,8 +229,7 @@ export default () => {
             noti('success', t(`Loaded ${length} Records!`, `已載入${length}筆記錄`));
             if (response.data[0]) {
                 setData(response.data);
-                const center = [response.data[0].lat, response.data[0].long];
-                setViewport(prev => ({ ...prev, center }));
+                const center = [response.data[0].lat, response.data[0].long]
             }
         } catch (e) {
             noti('error', e.toString());
@@ -308,7 +302,7 @@ export default () => {
                             <Grid item>
                                 <TextField
                                     label={t('Speed limit', 'Speed limit')}
-                                    type="number"
+                                    // type="number"
                                     style={{maxWidth: 120}}
                                     defaultValue={speedLimit}
                                     InputLabelProps={{shrink: true}}
@@ -394,38 +388,37 @@ export default () => {
                 >
                     <MenuIcon />
                 </IconButton>
-                {viewport && <MapContainer className={classes.map}
-                                  onViewportChanged={onViewportChanged}
-                                  viewport={viewport}
+                {center && <MapContainer
+                                className={classes.map}
+                                center={center}
+                                zoom={22}
                 >
                     <TileLayer
                         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         zoomControl="false"
                         maxZoom="28"
-                        attribution="&copy; Jasslin Map"
-                        center={viewport}
                     />
-                    {polyline[0] && <Polyline color="red" positions={polyline} />}
-                    {polyline[0] && <Marker
-                        icon={L.icon({ iconUrl: startIcon })}
-                        position={polyline[0]}
-                    >
-                        <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>
-                    </Marker>}
-                    {polyline[polyline.length - 1] && <Marker
-                        icon={L.icon({ iconUrl: endIcon })}
-                        position={polyline[polyline.length - 1]}
-                    >
-                        <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
-                    </Marker>}
-                    {vehiclePos && <DriftMarker
-                        // if position changes, marker will drift its way to new position
-                        position={vehiclePos}
-                        // time in ms that marker will take to reach its destination
-                        duration={1}
-                        icon={carIcon}>
-                        <Tooltip permanent direction='right'>{select.value}</Tooltip>
-                    </DriftMarker>}
+                    {/*{polyline[0] && <Polyline color="red" positions={polyline} />}*/}
+                    {/*{polyline[0] && <Marker*/}
+                    {/*    icon={L.icon({ iconUrl: startIcon })}*/}
+                    {/*    position={polyline[0]}*/}
+                    {/*>*/}
+                    {/*    <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*/}
+                    {/*</Marker>}*/}
+                    {/*{polyline[polyline.length - 1] && <Marker*/}
+                    {/*    icon={L.icon({ iconUrl: endIcon })}*/}
+                    {/*    position={polyline[polyline.length - 1]}*/}
+                    {/*>*/}
+                    {/*    <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*/}
+                    {/*</Marker>}*/}
+                    {/*{vehiclePos && <DriftMarker*/}
+                    {/*    // if position changes, marker will drift its way to new position*/}
+                    {/*    position={vehiclePos}*/}
+                    {/*    // time in ms that marker will take to reach its destination*/}
+                    {/*    duration={1}*/}
+                    {/*    icon={carIcon}>*/}
+                    {/*    <Tooltip permanent direction='right'>{select.value}</Tooltip>*/}
+                    {/*</DriftMarker>}*/}
                 </MapContainer>}
             </main>
         </div>

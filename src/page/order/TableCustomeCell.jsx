@@ -16,6 +16,7 @@ import inventoryIcon from "../../asset/images/delivery.png";
 import driverApi from "../../services/driverApi";
 import restaurantApi from "../../services/restaurantApi";
 import {Timeline} from "@material-ui/icons";
+import OrderTimeline from "../../component/OrderTimeLine";
 import {
     TimelineConnector,
     TimelineContent,
@@ -28,7 +29,7 @@ import FastfoodIcon from '@mui/icons-material/Fastfood';
 import LaptopMacIcon from '@mui/icons-material/LaptopMac';
 import HotelIcon from '@mui/icons-material/Hotel';
 import RepeatIcon from '@mui/icons-material/Repeat';
-import Typography from '@mui/material/Typography';
+import Grid from "@material-ui/core/Grid";
 const useStyles = makeStyles((theme) => ({
     map: {
         height: `70vh`,
@@ -45,26 +46,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const steps = [
-    {
-        label: 'Select campaign settings',
-        description: `For each ad campaign that you create, you can control how much
-              you're willing to spend on clicks and conversions, which networks
-              and geographical locations you want your ads to show on, and more.`,
-    },
-    {
-        label: 'Create an ad group',
-        description:
-            'An ad group contains one or more ads which target a shared set of keywords.',
-    },
-    {
-        label: 'Create an ad',
-        description: `Try out different ad text to see what brings in the most customers,
-              and learn how to enhance your ads using features like ad extensions.
-              If you run into any problems with your ads, find out how to tell if
-              they're running and how to resolve approval issues.`,
-    },
-];
 
 export default function TableCustomeCell(props) {
 
@@ -163,118 +144,50 @@ export default function TableCustomeCell(props) {
                     <TableRow>
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                             <Collapse in={openCollapse} timeout="auto" unmountOnExit>
-                                    <MapContainer
-                                        className={classes.map}
-                                        center={[order?.Latitude, order?.Longitude]}
-                                        zoom={zoom}
-                                    >
-                                        <TileLayer
-                                            url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                            zoomControl="false"
-                                            maxZoom="28"
+                                <Grid container spacing={2}>
+                                    <Grid item xs={3}>
+                                        <OrderTimeline
+                                        orderInfo = {order}
                                         />
-                                        <Marker
-                                            icon={iconOrder}
-                                            position={[order?.Latitude, order?.Longitude]}
-                                        />
-                                        {driverList.map((driver,index)=>{
-                                            return driver.Longitude && driver.Latitude && (
-                                                <Marker
-                                                    icon={iconTruck}
-                                                    position={[driver?.Latitude,driver?.Longitude]}
-                                                />
-                                            )
-                                        })}
-                                        {restaurantList.map((restaurant,index)=>{
-                                            return restaurant.Longitude && restaurant.Latitude && (
-                                                <Marker
-                                                    icon={iconRestaurant}
-                                                    position={[restaurant?.Latitude,restaurant?.Longitude]}
-                                                />
-                                            )
-                                        })}
-                                        <Polyline pathOptions={fillBlueOptions} positions={distance} />
-                                    </MapContainer>
+                                    </Grid>
+                                    <Grid item xs={3}>
+                                        <MapContainer
+                                            className={classes.map}
+                                            center={[order?.Latitude, order?.Longitude]}
+                                            zoom={zoom}
+                                        >
+                                            <TileLayer
+                                                url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                                zoomControl="false"
+                                                maxZoom="28"
+                                            />
+                                            <Marker
+                                                icon={iconOrder}
+                                                position={[order?.Latitude, order?.Longitude]}
+                                            />
+                                            {driverList.map((driver,index)=>{
+                                                return driver.Longitude && driver.Latitude && (
+                                                    <Marker
+                                                        icon={iconTruck}
+                                                        position={[driver?.Latitude,driver?.Longitude]}
+                                                    />
+                                                )
+                                            })}
+                                            {restaurantList.map((restaurant,index)=>{
+                                                return restaurant.Longitude && restaurant.Latitude && (
+                                                    <Marker
+                                                        icon={iconRestaurant}
+                                                        position={[restaurant?.Latitude,restaurant?.Longitude]}
+                                                    />
+                                                )
+                                            })}
+                                            <Polyline pathOptions={fillBlueOptions} positions={distance} />
+                                        </MapContainer>
+                                    </Grid>
+                                </Grid>
                             </Collapse>
                         </TableCell>
                     </TableRow>
-                    <Timeline position="auto">
-                        <TimelineItem>
-                            <TimelineOppositeContent
-                                sx={{ m: 'auto 0' }}
-                                align="right"
-                                variant="body2"
-                                color="text.secondary"
-                            >
-                                9:30 am
-                            </TimelineOppositeContent>
-                            <TimelineSeparator>
-                                <TimelineConnector />
-                                <TimelineDot>
-                                    <FastfoodIcon />
-                                </TimelineDot>
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                <Typography variant="h6" component="span">
-                                    Eat
-                                </Typography>
-                                <Typography>Because you need strength</Typography>
-                            </TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineOppositeContent
-                                sx={{ m: 'auto 0' }}
-                                variant="body2"
-                                color="text.secondary"
-                            >
-                                10:00 am
-                            </TimelineOppositeContent>
-                            <TimelineSeparator>
-                                <TimelineConnector />
-                                <TimelineDot color="primary">
-                                    <LaptopMacIcon />
-                                </TimelineDot>
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                <Typography variant="h6" component="span">
-                                    Code
-                                </Typography>
-                                <Typography>Because it&apos;s awesome!</Typography>
-                            </TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineConnector />
-                                <TimelineDot color="primary" variant="outlined">
-                                    <HotelIcon />
-                                </TimelineDot>
-                                <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
-                            </TimelineSeparator>
-                            <TimelineContent sx={{ py: '100px', px: 2 }}>
-                                <Typography variant="h6" component="span">
-                                    Sleep
-                                </Typography>
-                                <Typography>Because you need rest</Typography>
-                            </TimelineContent>
-                        </TimelineItem>
-                        <TimelineItem>
-                            <TimelineSeparator>
-                                <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
-                                <TimelineDot color="secondary">
-                                    <RepeatIcon />
-                                </TimelineDot>
-                                <TimelineConnector />
-                            </TimelineSeparator>
-                            <TimelineContent sx={{ py: '50%', px: 2 }}>
-                                <Typography variant="h6" component="span">
-                                    Repeat
-                                </Typography>
-                                <Typography>Because this is the life you love!</Typography>
-                            </TimelineContent>
-                        </TimelineItem>
-                    </Timeline>
                 </React.Fragment>
     );
 }
