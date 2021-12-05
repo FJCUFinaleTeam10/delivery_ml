@@ -9,9 +9,7 @@ import {
 import {
     MapContainer,
     TileLayer,
-    Polyline,
-    Marker,
-    Tooltip, useMap
+    useMap
 } from 'react-leaflet';
 import { DriftMarker } from 'leaflet-drift-marker';
 import 'leaflet/dist/leaflet.css';
@@ -76,9 +74,9 @@ const carIcon = new L.icon({
 // const MAX_SPEED = 70;
 const drawerWidth = 500;
 const useStyles = makeStyles(theme => createStyles({
-    root: {
-        display: 'flex',
-    },
+    // root: {
+    //     display: 'flex',
+    // },
     map: {
         height: `90vh`
     },
@@ -151,7 +149,7 @@ export default () => {
     const select = useNativeSelect('');
     const from = useDateTimePicker(initialDate);
     const to = useDateTimePicker(new Date());
-
+    const position = [51.505, -0.09]
     const [isRunning, setIsRunning] = useState(false);
     const [cityList,setCityList] = useState([]);
 
@@ -197,7 +195,7 @@ export default () => {
         { title: t(`Time`, 'Time'), field: '_trackerTime' },
         { title: t('Speed', 'Speed'), field: 'speed' },
         { title: t('Traveled kilometers', 'Traveled kilometers'), field: 'traveledKilometers' },
-        { title: t('Address', 'ddress'), field: 'address' }
+        { title: t('Address', 'address'), field: 'address' }
     ];
 
     function play() {setIsRunning(true);}
@@ -236,7 +234,7 @@ export default () => {
         }
     }
     return (
-        <div className={classes.root}>
+        <div>
             <Drawer
                 className={classes.drawer}
                 variant="persistent"
@@ -298,20 +296,6 @@ export default () => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                            </Grid>
-                            <Grid item>
-                                <TextField
-                                    label={t('Speed limit', 'Speed limit')}
-                                    // type="number"
-                                    style={{maxWidth: 120}}
-                                    defaultValue={speedLimit}
-                                    InputLabelProps={{shrink: true}}
-                                    InputProps={{
-                                        endAdornment: <InputAdornment position="end"> km/h </InputAdornment>
-                                    }}
-                                    onChange={handleSpeedLimitChange}
-                                    variant="outlined"
-                                />
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -388,10 +372,11 @@ export default () => {
                 >
                     <MenuIcon />
                 </IconButton>
-                {center && <MapContainer
-                                className={classes.map}
-                                center={center}
-                                zoom={22}
+                <MapContainer
+                            center={position}
+                            zoom={13}
+                            scrollWheelZoom={false}
+                            className={classes.map}
                 >
                     <TileLayer
                         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -419,7 +404,7 @@ export default () => {
                     {/*    icon={carIcon}>*/}
                     {/*    <Tooltip permanent direction='right'>{select.value}</Tooltip>*/}
                     {/*</DriftMarker>}*/}
-                </MapContainer>}
+                </MapContainer>
             </main>
         </div>
     );

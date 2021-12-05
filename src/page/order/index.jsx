@@ -24,6 +24,7 @@ export default function Order() {
     const [pageSize,setPageSize] = useState(10);
     const [currentOrder,setCurrentOrder] = useState(null);
     const [cityList,setCityList] = useState([]);
+    const [total,setTotal] = useState(null);
     const [selectedCity,setSelectedCity] = useState({
         Latitude: 23.553118,
         Longitude: 121.0211024,
@@ -56,7 +57,8 @@ export default function Order() {
                 }
                 console.log(params);
                 const response = await   orderApi.getOrderBaseOnCity(params);
-                setOrderList(response);
+                setOrderList(response['data']);
+                setTotal(response['count']);
             } catch (error) {
                 console.log(error);
             }
@@ -70,9 +72,7 @@ export default function Order() {
         console.log(orderList);
     },[orderList]);
 
-    const handleClick = ()=>{
-
-    }
+    const handleClick = ()=>{}
     const handleChangePage = (e,pageNumber)=>{setCurrentPage(pageNumber);}
     const handleChangeRowsPerPage=(e)=>{
         console.log(e);
@@ -118,7 +118,6 @@ export default function Order() {
                         <TableHead>
                             <TableRow>
                                 <TableCell />
-
                                 <TableCell align="right"> Order ID</TableCell>
                                 <TableCell align="right">Assigned Time</TableCell>
                                 <TableCell align="right">Latitude</TableCell>
@@ -140,7 +139,7 @@ export default function Order() {
                     </Table>
                 </TableContainer>
                 <TablePagination component="div"
-                                 count={100}
+                                 count={total}
                                  page={currentPage}
                                  onPageChange={(e,pageNumber)=>handleChangePage(e,pageNumber)}
                                  rowsPerPage={pageSize}

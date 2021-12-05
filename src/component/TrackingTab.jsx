@@ -144,7 +144,7 @@ export default function TrackingTab(props) {
                  <ListItemIcon>
                    <CardTravelIcon />
                  </ListItemIcon>
-                 <ListItemText primary={r.id} />
+                 <ListItemText primary={`order id: ${r.Order_ID}`} />
                  {selectedIndex === i ? <ExpandLess /> : <ExpandMore />}
                </ListItem>
                  <Divider />

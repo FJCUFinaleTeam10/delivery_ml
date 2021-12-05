@@ -33,6 +33,7 @@ export default function LeafletMap(props) {
   const {driverList} = props;
   const {orderList } = props;
   const {centerCity} = props;
+
   const iconTruck = new L.Icon({
     iconUrl: LocalShippingIcon,
     iconSize: new L.Point(60, 75),
@@ -57,9 +58,9 @@ export default function LeafletMap(props) {
                 position={[v.Latitude, v.Longitude]}
               />
             )
-        );  
+        );
     }
-         
+
   };
     const renderRestaurants =() => {
       if (restaurantList.length > 0) {

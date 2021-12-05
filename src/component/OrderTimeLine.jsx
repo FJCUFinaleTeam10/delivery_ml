@@ -17,10 +17,7 @@ import {useEffect} from "react";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function  timeLineIcon(orderStatus,require){
-    return(
-        <React.Fragment>
-            {
-                parseInt(orderStatus)>require?
+    return parseInt(orderStatus)>require?
                     <CheckCircleIcon
                         color={'success'}
                     />
@@ -31,9 +28,6 @@ function  timeLineIcon(orderStatus,require){
                         <TimerIcon
                             color={'disabled'}
                         />
-            }
-        </React.Fragment>
-    );
 }
 function  timeLineStatus(orderStatus,require,time){
     return(
@@ -72,6 +66,7 @@ export default function OrderTimeline(props) {
                     align="right"
                     variant="body2"
                     color="text.secondary"
+                    position="right"
                 >
                     {
                         timeLineStatus(orderInfo.order_status,parseInt(-1),orderInfo.order_request_time)
@@ -79,7 +74,9 @@ export default function OrderTimeline(props) {
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
-                        {timeLineIcon(orderInfo.order_status,-1)}
+                        <TimelineDot>
+                            {timeLineIcon(orderInfo.order_status,-1)}
+                        </TimelineDot>
                     <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: '12px', px: 2 }}>
@@ -97,11 +94,10 @@ export default function OrderTimeline(props) {
                 >{
                     timeLineStatus(orderInfo.order_status,-1,orderInfo.order_approved_at)
                 }
-
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
-                    <TimelineDot color="primary">
+                    <TimelineDot>
                         {timeLineIcon(orderInfo.order_status,1)}
                     </TimelineDot>
                     <TimelineConnector />
@@ -112,7 +108,7 @@ export default function OrderTimeline(props) {
             </TimelineItem>
             <TimelineItem>
                 <TimelineOppositeContent
-                    sx={{ m: 'auto 0' }}
+                    sx={{ m: 'auto 5' }}
                     variant="body2"
                     color="text.secondary"
                     align="right"
@@ -121,7 +117,7 @@ export default function OrderTimeline(props) {
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
-                    <TimelineDot color="primary" variant="outlined">
+                    <TimelineDot>
                         {timeLineIcon(orderInfo.order_status,1)}
                     </TimelineDot>
                     <TimelineConnector sx={{ bgcolor: 'secondary.main' }} />
@@ -141,7 +137,7 @@ export default function OrderTimeline(props) {
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                     <TimelineConnector />
-                    <TimelineDot color="primary" variant="outlined">
+                    <TimelineDot >
                         {timeLineIcon(orderInfo.order_status,parseInt(3))}
                     </TimelineDot>
                 </TimelineSeparator>

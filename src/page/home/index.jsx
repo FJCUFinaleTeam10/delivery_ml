@@ -87,7 +87,7 @@ export default function Home() {
             cityId:selectedCity?.City_id,
           };
           const response = await orderApi.getOrderBaseOnCity(params);
-          setOrderList(response);
+          setOrderList(response['data']);
         } catch (e) {
           console.log(e);
         }
