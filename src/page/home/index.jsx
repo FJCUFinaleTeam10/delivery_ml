@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {useEffect, useState, useCallback, useMemo, useRef} from "react";
 import { makeStyles} from "@material-ui/core";
 
 import LeafletMap from "../../component/leaflet.jsx";
@@ -42,8 +42,9 @@ export default function Home() {
     City:"Arga",
     City_id:1
   });
-
   const [currentTrackingTab,setCurrentTrackingTab] = useState(0);
+  const mapRef = useRef();
+
   useEffect(() => {
       async function fetchCity(){
         const response = await geolocationApi.getAllCity();
@@ -66,6 +67,12 @@ export default function Home() {
 
   useEffect(() => {
     console.log(selectedCity);
+    const {current={}}=mapRef;
+    const {leafletElement:map}=current;
+    console.log(current);
+    if('getSize' in current){
+      current?.setView([selectedCity?.Latitude, selectedCity?.Longitude],15);
+    }
     const intervalId = setInterval(() => {  //assign interval to a variable to clear it.
 
       async function getDriverBaseOnCity() {
@@ -94,7 +101,7 @@ export default function Home() {
       }
       getOrderBaseOnCity();
       getDriverBaseOnCity();
-    }, 10000)
+    }, 1000)
     async function getRestaurantBaseOnCity() {
       try {
         const params = {
@@ -109,6 +116,8 @@ export default function Home() {
     }
     getRestaurantBaseOnCity();
     return () => clearInterval(intervalId); //This is important
+
+
 
   }, [selectedCity]);
 
@@ -153,6 +162,7 @@ const handleChangeCity = (e)=>{
             restaurantList={restaurantList}
             orderList={orderList}
             centerCity={selectedCity}
+            mapRef={mapRef}
           />
           <TrackingTab
             orderList={orderList}
@@ -162,6 +172,7 @@ const handleChangeCity = (e)=>{
             handleClickTrackingTabItem={handleClickTrackingTabItem}
             currentTrackingTab={currentTrackingTab}
             handleChangeTrackingTab={handleChangeTrackingTab}
+
           />
         </div>
       );

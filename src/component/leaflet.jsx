@@ -20,11 +20,11 @@ const useStyles = makeStyles((theme) => ({
     backGround: `inherit`,
   },
 }));
-function ChangeView({ center, zoom }) {
-  const map = useMap();
-  map.setView(center, zoom);
-  return null;
-}
+// function ChangeView({ center, zoom }) {
+//   const map = useMap();
+//   map.setView(center, zoom);
+//   return null;
+// }
 
 export default function LeafletMap(props) {
   const classes = useStyles();
@@ -33,18 +33,18 @@ export default function LeafletMap(props) {
   const {driverList} = props;
   const {orderList } = props;
   const {centerCity} = props;
-
+  const {mapRef} = props;
   const iconTruck = new L.Icon({
     iconUrl: LocalShippingIcon,
-    iconSize: new L.Point(60, 75),
+    iconSize: new L.Point(35, 50),
   });
   const iconRestaurant = new L.Icon({
     iconUrl: storeIcon,
-    iconSize: new L.Point(60, 75),
+    iconSize: new L.Point(35, 50),
   });
   const iconOrder = new L.Icon({
     iconUrl: inventoryIcon,
-    iconSize: new L.Point(60, 75),
+    iconSize: new L.Point(35, 50),
   });
 
   const renderVehicles =() =>{
@@ -99,11 +99,12 @@ export default function LeafletMap(props) {
       className={classes.map}
       center={[centerCity.Latitude, centerCity.Longitude]}
       zoom={zoom}
+      whenCreated={ mapInstance => { mapRef.current = mapInstance }}
     >
-      <ChangeView
-        center={[centerCity.Latitude, centerCity.Longitude]}
-        zoom={zoom}
-      />
+      {/*<ChangeView*/}
+      {/*  center={[centerCity.Latitude, centerCity.Longitude]}*/}
+      {/*  zoom={zoom}*/}
+      {/*/>*/}
       <TileLayer
         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         zoomControl="false"
