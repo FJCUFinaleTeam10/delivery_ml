@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import clsx from 'clsx';
 import {
     makeStyles,
@@ -50,6 +50,8 @@ import { KeyboardDateTimePicker } from '@material-ui/pickers';
 import L from 'leaflet';
 import geolocationApi from "../services/geolocationApi";
 import MenuItem from "@mui/material/MenuItem";
+import {Marker, Polyline} from "leaflet/dist/leaflet-src.esm";
+import {Tooltip} from "@material-ui/core";
 
 const MySlider = withStyles({
     root: {
@@ -124,11 +126,7 @@ const useStyles = makeStyles(theme => createStyles({
 
 const initCenter = [23.553118, 121.0211024];
 
-function ChangeView({ center, zoom }) {
-    const map = useMap();
-    map.setView(center, zoom);
-    return null;
-}
+
 
 export default () => {
     const classes = useStyles();
@@ -152,6 +150,7 @@ export default () => {
     const position = [51.505, -0.09]
     const [isRunning, setIsRunning] = useState(false);
     const [cityList,setCityList] = useState([]);
+    const mapRef = useRef();
 
     useEffect(()=>{
             async function fetchCity(){
@@ -162,21 +161,19 @@ export default () => {
     },[]);
 
     useEffect(()=>{
-        console.log(cityList);
         setCurrentSelectedCity(0);
     },[cityList]);
-    useEffect(()=>{
-        console.log(cityList[currentSelectedCity]);
-        setCenter([cityList[currentSelectedCity]?.Latitude,
-                        cityList[currentSelectedCity]?.Longitude]);
 
+    useEffect(()=>{
+        setCenter([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude]);
+
+        const {current={}}=mapRef;
+        const {leafletElement:map}=current;
+        console.log(current);
+        if('getSize' in current){
+            current?.setView([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude],15);
+        }
     },[currentSelectedCity]);
-
-    useEffect(()=>{
-        console.log(center);
-    },[center]);
-
-
 
     function resolveStatus(i) {
         let status;
@@ -206,7 +203,6 @@ export default () => {
     const handleDrawerClose = () => {setOpen(false);};
     const handleChangeCity=(event)=>{
         setCurrentSelectedCity(event.target.value);
-        // ChangeView({});
     }
 
     const submit = async (event) => {
@@ -372,39 +368,40 @@ export default () => {
                 >
                     <MenuIcon />
                 </IconButton>
-                <MapContainer
-                            center={position}
+                {currentSelectedCity && <MapContainer
+                            center={[cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude]}
                             zoom={13}
                             scrollWheelZoom={false}
                             className={classes.map}
+                            whenCreated={ mapInstance => { mapRef.current = mapInstance } }
                 >
                     <TileLayer
                         url="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         zoomControl="false"
                         maxZoom="28"
                     />
-                    {/*{polyline[0] && <Polyline color="red" positions={polyline} />}*/}
-                    {/*{polyline[0] && <Marker*/}
-                    {/*    icon={L.icon({ iconUrl: startIcon })}*/}
-                    {/*    position={polyline[0]}*/}
-                    {/*>*/}
-                    {/*    <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*/}
-                    {/*</Marker>}*/}
-                    {/*{polyline[polyline.length - 1] && <Marker*/}
-                    {/*    icon={L.icon({ iconUrl: endIcon })}*/}
-                    {/*    position={polyline[polyline.length - 1]}*/}
-                    {/*>*/}
-                    {/*    <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*/}
-                    {/*</Marker>}*/}
-                    {/*{vehiclePos && <DriftMarker*/}
-                    {/*    // if position changes, marker will drift its way to new position*/}
-                    {/*    position={vehiclePos}*/}
-                    {/*    // time in ms that marker will take to reach its destination*/}
-                    {/*    duration={1}*/}
-                    {/*    icon={carIcon}>*/}
-                    {/*    <Tooltip permanent direction='right'>{select.value}</Tooltip>*/}
-                    {/*</DriftMarker>}*/}
-                </MapContainer>
+                    {polyline[0] && <Polyline color="red" positions={polyline} />}
+                    {polyline[0] && <Marker
+                        icon={L.icon({ iconUrl: startIcon })}
+                        position={polyline[0]}
+                    >
+                        <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>
+                    </Marker>}
+                    {polyline[polyline.length - 1] && <Marker
+                        icon={L.icon({ iconUrl: endIcon })}
+                        position={polyline[polyline.length - 1]}
+                    >
+                        <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
+                    </Marker>}
+                    {vehiclePos && <DriftMarker
+                        // if position changes, marker will drift its way to new position
+                        position={vehiclePos}
+                        // time in ms that marker will take to reach its destination
+                        duration={1}
+                        icon={carIcon}>
+                        <Tooltip permanent direction='right'>{select.value}</Tooltip>
+                    </DriftMarker>}
+                </MapContainer>}
             </main>
         </div>
     );
