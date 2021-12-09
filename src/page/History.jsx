@@ -393,14 +393,14 @@ export default () => {
                     >
                         <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
                     </Marker>}
-                    {vehiclePos && <DriftMarker
-                        // if position changes, marker will drift its way to new position
-                        position={vehiclePos}
-                        // time in ms that marker will take to reach its destination
-                        duration={1}
-                        icon={carIcon}>
-                        <Tooltip permanent direction='right'>{select.value}</Tooltip>
-                    </DriftMarker>}
+                    {/*{vehiclePos && <DriftMarker*/}
+                    {/*    // if position changes, marker will drift its way to new position*/}
+                    {/*    position={vehiclePos}*/}
+                    {/*    // time in ms that marker will take to reach its destination*/}
+                    {/*    duration={1}*/}
+                    {/*    icon={carIcon}>*/}
+                    {/*    <Tooltip permanent direction='right'>{select.value}</Tooltip>*/}
+                    {/*</DriftMarker>}*/}
                 </MapContainer>}
             </main>
         </div>
