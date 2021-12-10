@@ -52,6 +52,7 @@ import geolocationApi from "../services/geolocationApi";
 import MenuItem from "@mui/material/MenuItem";
 import {Marker, Polyline} from "leaflet/dist/leaflet-src.esm";
 import {Tooltip} from "@material-ui/core";
+import driverApi from "../services/driverApi";
 
 const MySlider = withStyles({
     root: {
@@ -128,12 +129,15 @@ const initCenter = [23.553118, 121.0211024];
 
 
 
+
+
+
 export default () => {
     const classes = useStyles();
     const [speedLimit, setSpeedLimit] = useState(70);
     const [data, setData] = useState([]);
     const polyline = data.filter(i => i.lat && i.long).map(d => [d.lat, d.long]);
-    const [currentSelectedCity,setCurrentSelectedCity]= useState(null);
+    const [currentSelectedCity,setCurrentSelectedCity]= useState(0);
     const [center,setCenter] = useState(initCenter);
     const [open, setOpen] = useState(true);
     const [delay, setDelay] = useState(50);
@@ -151,6 +155,14 @@ export default () => {
     const [isRunning, setIsRunning] = useState(false);
     const [cityList,setCityList] = useState([]);
     const mapRef = useRef();
+    const [driverIDList,setDriverIDList] = useState([]);
+
+    async function getDriverIDFromCity(){
+        const response = await driverApi.getDriverIDBaseOnCIty({
+            cityId:cityList[currentSelectedCity]?.City_id
+        });
+        setDriverIDList(response['data']);
+    };
 
     useEffect(()=>{
             async function fetchCity(){
@@ -160,15 +172,22 @@ export default () => {
             fetchCity();
     },[]);
 
+    useEffect(() => {
+        console.log(driverIDList);
+    }, [driverIDList]);
+
+
     useEffect(()=>{
-        setCurrentSelectedCity(0);
+        if(cityList.length>0){
+            setCurrentSelectedCity(0);
+            console.log(cityList);
+        }
     },[cityList]);
 
     useEffect(()=>{
+        console.log(cityList[currentSelectedCity]);
         setCenter([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude]);
-
         const {current={}}=mapRef;
-        const {leafletElement:map}=current;
         console.log(current);
         if('getSize' in current){
             current?.setView([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude],15);
@@ -203,6 +222,8 @@ export default () => {
     const handleDrawerClose = () => {setOpen(false);};
     const handleChangeCity=(event)=>{
         setCurrentSelectedCity(event.target.value);
+        getDriverIDFromCity();
+        console.log("done");
     }
 
     const submit = async (event) => {
@@ -393,14 +414,14 @@ export default () => {
                     >
                         <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
                     </Marker>}
-                    {/*{vehiclePos && <DriftMarker*/}
-                    {/*    // if position changes, marker will drift its way to new position*/}
-                    {/*    position={vehiclePos}*/}
-                    {/*    // time in ms that marker will take to reach its destination*/}
-                    {/*    duration={1}*/}
-                    {/*    icon={carIcon}>*/}
-                    {/*    <Tooltip permanent direction='right'>{select.value}</Tooltip>*/}
-                    {/*</DriftMarker>}*/}
+                    {driverIDList && <DriftMarker
+                        // if position changes, marker will drift its way to new position
+                        position={vehiclePos}
+                        // time in ms that marker will take to reach its destination
+                        duration={1}
+                        icon={carIcon}>
+                        <Tooltip permanent direction='right'>{select.value}</Tooltip>
+                    </DriftMarker>}
                 </MapContainer>}
             </main>
         </div>

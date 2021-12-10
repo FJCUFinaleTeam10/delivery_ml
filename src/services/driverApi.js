@@ -19,6 +19,10 @@ const  driverApi={
     getCurrentRoute:(params)=>{
         const url = `/route/getcurrentroute/`;
         return axiosClient.post(url,{params});
+    },
+    getDriverIDBaseOnCIty:(params)=>{
+        const url = `/driver/getdriveridbaseoncity/`;
+        return axiosClient.post(url,{params});
     }
 }
 export default driverApi;
