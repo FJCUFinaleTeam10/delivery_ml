@@ -5,9 +5,7 @@ import _ from 'lodash';
 
 export function useNativeSelect(initialValue) {
     const [value, setValue] = useState(initialValue);
-    const onChange = event => {
-        setValue(event.target.value);
-    };
+    const onChange = event => {setValue(event.target.value);};
     return {
         value,
         onChange
@@ -63,8 +61,6 @@ export function useInterval(callback, delay) {
     useEffect(() => {
         savedCallback.current = callback;
     }, [callback]);
-
-
     // Set up the interval.
     useEffect(() => {
         function tick() {savedCallback.current();}
@@ -74,7 +70,6 @@ export function useInterval(callback, delay) {
         }
     }, [delay]);
 }
-
 // https://blog.logrocket.com/how-to-get-previous-props-state-with-react-hooks/
 export function usePrevious(value) {
     const ref = useRef();

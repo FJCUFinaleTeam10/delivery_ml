@@ -77,11 +77,10 @@ export default function Home() {
 
       async function getDriverBaseOnCity() {
         try {
-          const params = {
+          const response = await driverApi.getDriverBaseOnCity({
             city: selectedCity.City,
             cityId:selectedCity?.City_id,
-          };
-          const response = await driverApi.getDriverBaseOnCity(params);
+          });
           setDriverList(response['data']);
         } catch (e) {
           console.log(e);
@@ -91,7 +90,7 @@ export default function Home() {
         try {
           const params = {
             city: selectedCity.City,
-            cityId:selectedCity?.City_id,
+            cityId:selectedCity?.City_id
           };
           const response = await orderApi.getOrderBaseOnCity(params);
           setOrderList(response['data']);
@@ -101,14 +100,13 @@ export default function Home() {
       }
       getOrderBaseOnCity();
       getDriverBaseOnCity();
-    }, 1000)
+    }, 10000)
     async function getRestaurantBaseOnCity() {
       try {
-        const params = {
+        const response = await restaurantApi.getRestaurantBaseOnCity({
           city: selectedCity?.City,
           cityId:selectedCity?.City_id,
-        };
-        const response = await restaurantApi.getRestaurantBaseOnCity(params);
+        });
         setRestaurantList(response);
       } catch (e) {
         console.log(e);

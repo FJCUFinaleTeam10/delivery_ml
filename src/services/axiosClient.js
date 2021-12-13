@@ -4,15 +4,17 @@ import queryString from "query-string";
 const axiosClient = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
   headers: {
-    "Content-Type": "application/json",
+    // "Content-Type": "application/json",
     // "Access-Control-Allow-Origin":"*"
+    // 'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'text/plain'
   },
   paramsSerializer: (params) => queryString.Stringify(params),
 });
-  axiosClient.interceptors.request.use(async (config) => {
-    return config;
-  });
-  axiosClient.interceptors.response.use(
+axiosClient.interceptors.request.use(async (config) => {
+  return config;
+});
+axiosClient.interceptors.response.use(
     async (response) => {
       if (response.data && response) {
         return response.data;
@@ -22,6 +24,5 @@ const axiosClient = axios.create({
     (error) => {
       throw error;
     }
-  );
-  export default axiosClient;
-  
+);
+export default axiosClient;

@@ -9,9 +9,8 @@ import {
 import {
     MapContainer,
     TileLayer,
-    useMap
+    Popup
 } from 'react-leaflet';
-import { DriftMarker } from 'leaflet-drift-marker';
 import 'leaflet/dist/leaflet.css';
 import startIcon from '../asset/images/begin.png';
 import endIcon from '../asset/images/end.png';
@@ -30,14 +29,14 @@ import MenuIcon from '@material-ui/icons/Menu';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Button from '@material-ui/core/Button';
 import { DateTime } from 'luxon';
 import Typography from '@material-ui/core/Typography';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import "leaflet/dist/leaflet.css";
+import ReactLeafletDriftMarker from "react-leaflet-drift-marker"
+import initDemo from "./demo";
 import {
     useNativeSelect,
     useVehicleData,
@@ -53,7 +52,8 @@ import MenuItem from "@mui/material/MenuItem";
 import {Marker, Polyline} from "leaflet/dist/leaflet-src.esm";
 import {Tooltip} from "@material-ui/core";
 import driverApi from "../services/driverApi";
-
+import ResultDialog from "../component/ResultDialog";
+import routeHistoryApi from "../services/routeHistoryApi";
 const MySlider = withStyles({
     root: {
         color: '#87ff69'
@@ -127,6 +127,13 @@ const useStyles = makeStyles(theme => createStyles({
 
 const initCenter = [23.553118, 121.0211024];
 
+function gen_position() {
+    return {
+        lat:(Math.random()*360-180).toFixed(8),
+        lng:(Math.random()*180-90).toFixed(8)}
+}
+
+
 
 
 
@@ -141,7 +148,6 @@ export default () => {
     const [center,setCenter] = useState(initCenter);
     const [open, setOpen] = useState(true);
     const [delay, setDelay] = useState(50);
-    const [index, setIndex] = useState(0);
     const theme = useTheme();
     const axios = createAxios();
     const t = useTrans();
@@ -151,11 +157,31 @@ export default () => {
     const select = useNativeSelect('');
     const from = useDateTimePicker(initialDate);
     const to = useDateTimePicker(new Date());
-    const position = [51.505, -0.09]
     const [isRunning, setIsRunning] = useState(false);
-    const [cityList,setCityList] = useState([]);
     const mapRef = useRef();
     const [driverIDList,setDriverIDList] = useState([]);
+    const [vehiclePos,setVehiclePos] = useState({latlng:gen_position()});
+    const [prevPos,setPrevPos] = useState({latlng:gen_position()});
+    const [openDialog, setOpenDialog] = React.useState(false);
+    const [fullWidthDialog, setFullWidthDialog] = React.useState(true);
+    const [maxWidthDialog, setMaxWidthDialog] = React.useState('sm');
+
+
+    const handleClickOpen = () => {setOpenDialog(true);};
+    const handleClose = () => {setOpenDialog(false);};
+    const handleMaxWidthChange = (event) => {setMaxWidthDialog(event.target.value,);};
+    const handleFullWidthChange = (event) => {setFullWidthDialog(event.target.checked);};
+
+    const [cityList,setCityList] = useState([{
+        City: "Chandigarh",
+        City_id: 9,
+        Country_Code: 1,
+        Latitude: 30.7353,
+        Longitude: 76.7911,
+        id: "616bc7199a588a2f1d67aed6",
+        radius: 0.048094947,
+    }]);
+
 
     async function getDriverIDFromCity(){
         const response = await driverApi.getDriverIDBaseOnCIty({
@@ -164,7 +190,11 @@ export default () => {
         setDriverIDList(response['data']);
     };
 
+
     useEffect(()=>{
+        setTimeout(() => {// updates position every 5 sec
+            setVehiclePos({latlng:gen_position()})
+        }, 5000);
             async function fetchCity(){
                 const response = await geolocationApi.getAllCity();
                 setCityList(response);
@@ -172,27 +202,58 @@ export default () => {
             fetchCity();
     },[]);
 
-    useEffect(() => {
-        console.log(driverIDList);
-    }, [driverIDList]);
-
 
     useEffect(()=>{
         if(cityList.length>0){
             setCurrentSelectedCity(0);
-            console.log(cityList);
         }
     },[cityList]);
 
     useEffect(()=>{
+        console.log(currentSelectedCity);
         console.log(cityList[currentSelectedCity]);
+        console.log([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude])
         setCenter([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude]);
         const {current={}}=mapRef;
-        console.log(current);
         if('getSize' in current){
-            current?.setView([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude],15);
+            current?.setView([cityList[currentSelectedCity]?.Latitude,
+                                                    cityList[currentSelectedCity]?.Longitude],15);
         }
+        setVehiclePos([cityList[currentSelectedCity]?.Latitude,
+                            cityList[currentSelectedCity]?.Longitude]);
+
+        setPrevPos([cityList[currentSelectedCity]?.Latitude,
+                        cityList[currentSelectedCity]?.Longitude]);
+
     },[currentSelectedCity]);
+
+    useEffect(()=>{
+        console.log(prevPos);
+    },[prevPos]);
+
+    useEffect(()=>{
+        console.log(vehiclePos);
+    },[vehiclePos]);
+
+    useEffect(()=>{
+        console.log(from);
+    },[from]);
+
+    useEffect(()=>{
+        console.log(to);
+    },[to]);
+
+
+    // useInterval(() => {
+    //     const next = polyline[index + 1];
+    //     if (!next) {
+    //         setIsRunning(false);
+    //         return;
+    //     }
+    //     setVehiclePos(next);
+    //     // setViewport(prev => ({ ...prev, center: next}));
+    //     setIndex(index + 1);
+    // }, isRunning ? delay : null);
 
     function resolveStatus(i) {
         let status;
@@ -223,17 +284,14 @@ export default () => {
     const handleChangeCity=(event)=>{
         setCurrentSelectedCity(event.target.value);
         getDriverIDFromCity();
-        console.log("done");
     }
 
     const submit = async (event) => {
         try {
-            const response = await axios.get(`/journey-detail-report`, {
-                params: {
-                    registrationNumber: select.value,
-                    from: from.value,
-                    to: to.value
-                }
+            const response = await  routeHistoryApi.getHistoryBaseOnDriverID({
+                cityID:cityList[currentSelectedCity].City_id,
+                from: from.value,
+                to: to.value
             });
             const length = response.data.length;
             if (length > 0) {
@@ -321,7 +379,7 @@ export default () => {
                             variant="contained"
                             color="primary"
                             className={classes.button}
-                            onClick={submit}
+                            onClick={()=>submit()}
                         >
                             {t('Load ', 'Load ')}
                         </Button>
@@ -375,9 +433,7 @@ export default () => {
                 />
             </Drawer>
             <main
-                className={clsx(classes.content, {
-                    [classes.contentShift]: open,
-                })}
+                className={clsx(classes.content, {[classes.contentShift]: open,})}
             >
                 <div className={classes.drawerHeader} />
                 <IconButton
@@ -389,7 +445,8 @@ export default () => {
                 >
                     <MenuIcon />
                 </IconButton>
-                {currentSelectedCity && <MapContainer
+                {currentSelectedCity &&
+                <MapContainer
                             center={[cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude]}
                             zoom={13}
                             scrollWheelZoom={false}
@@ -401,27 +458,47 @@ export default () => {
                         zoomControl="false"
                         maxZoom="28"
                     />
-                    {polyline[0] && <Polyline color="red" positions={polyline} />}
-                    {polyline[0] && <Marker
+                    {polyline[0] &&
+                    <Polyline color="red" positions={polyline} />}
+                    {polyline[0] &&
+                    <Marker
                         icon={L.icon({ iconUrl: startIcon })}
                         position={polyline[0]}
                     >
                         <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>
                     </Marker>}
-                    {polyline[polyline.length - 1] && <Marker
+                    {polyline[polyline.length - 1] &&
+                    <Marker
                         icon={L.icon({ iconUrl: endIcon })}
                         position={polyline[polyline.length - 1]}
                     >
                         <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
                     </Marker>}
-                    {driverIDList && <DriftMarker
+                    {/*{vehiclePos && prevPos &&*/}
+                    {/*<LeafletTrackingMarker*/}
+                    {/*    icon={carIcon}*/}
+                    {/*    position={[vehiclePos?.lat, vehiclePos?.lng]}*/}
+                    {/*    previousPosition={[prevPos?.lat,prevPos?.lng]}*/}
+                    {/*    duration={1000} />*/}
+                    {/*}*/}
+                    <ReactLeafletDriftMarker
                         // if position changes, marker will drift its way to new position
                         position={vehiclePos}
                         // time in ms that marker will take to reach its destination
-                        duration={1}
-                        icon={carIcon}>
-                        <Tooltip permanent direction='right'>{select.value}</Tooltip>
-                    </DriftMarker>}
+                        duration={1000}
+                        icon={carIcon} >
+                        <Popup>Hi this is a popup</Popup>
+                        {/*<Tooltip>Hi here is a tooltip</Tooltip>*/}
+                    </ReactLeafletDriftMarker>
+                    <ResultDialog
+                        handleClickOpen={()=>handleClickOpen()}
+                        open ={openDialog}
+                        handleClose ={()=>handleClose()}
+                        fullWidth ={fullWidthDialog}
+                        maxWidth ={maxWidthDialog}
+                        handleMaxWidthChange = {()=>handleMaxWidthChange()}
+                        handleFullWidthChange = {()=>handleFullWidthChange()}
+                    />
                 </MapContainer>}
             </main>
         </div>
