@@ -154,7 +154,7 @@ export default () => {
     const classes = useStyles();
     const [speedLimit, setSpeedLimit] = useState(70);
     const [data, setData] = useState([]);
-    const polyline = data.filter(i => i.lat && i.long).map(d => [d.lat, d.long]);
+    const [orderList,setOrderList] = useState([]);
     const [currentSelectedCity,setCurrentSelectedCity]= useState(0);
     const [currentCityLabel, setCurrentCityLabel] = useState('');
     const [center,setCenter] = useState({
@@ -167,7 +167,7 @@ export default () => {
         radius: 0.048094947,
     });
     const [open, setOpen] = useState(true);
-    const [delay, setDelay] = useState(5000);
+    const [delay, setDelay] = useState(50);
     const theme = useTheme();
     const axios = createAxios();
     const t = useTrans();
@@ -232,13 +232,13 @@ export default () => {
     useEffect(()=>{
         console.log(routeHistoryList);
     },[routeHistoryList]);
+    useEffect(()=>{
+        console.log(restaurantList);
+    },[restaurantList]);
 
     useEffect(()=>{
-        console.log(isRunning);
-    },[isRunning]);
-    useEffect(()=>{
-        console.log(timePosition);
-    },[timePosition]);
+        console.log(orderList);
+    },[orderList]);
 
     useEffect(()=>{
         setCenter([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude]);
@@ -258,6 +258,23 @@ export default () => {
 
     },[currentSelectedCity]);
 
+    useEffect(()=>{
+        console.log(restaurantList);
+        console.log(orderList);
+        setRestaurantList(Array.from(new Set(routeHistoryList.map(node => node.id)))
+            .map(id => {
+                return routeHistoryList.find(node => node.id === id);
+            }))
+
+        setOrderList(routeHistoryList.filter(node=>node.nodetype===1&&
+        new Date(from.value.getTime()).setSeconds(from.value.getSeconds() + timePosition)>=DateTime.fromISO(node.Appear_time).toFormat('yyyy/MMM/dd   hh:mm a') &&
+        new Date(from.value.getTime()).setSeconds(from.value.getSeconds() + timePosition)<=DateTime.fromISO(node.Finish_time).toFormat('yyyy/MMM/dd   hh:mm a')));
+
+    },timePosition);
+
+    useEffect(()=>{
+        console.log(orderList);
+    },orderList);
     useInterval(() => {
         const next = timePosition+1;
 
@@ -266,7 +283,6 @@ export default () => {
             return;
         }
         setTimePosition(next);
-        console.log({next});
         // setViewport(prev => ({ ...prev, center: next}));
     }, isRunning ? delay : null);
 
@@ -330,30 +346,24 @@ export default () => {
 
 
             if (routeHistoryResponse.data.length> 0) {
-                routeHistoryResponse.data = routeHistoryResponse.data.map(x => Object.assign(x, {
-                    _trackerTime: DateTime.fromISO(x.trackerTime).toFormat('hh:mm:ss dd-MMM-yyyy')
-                }));
+                console.log(routeHistoryResponse['data']);
+                setRouteHistoryList(routeHistoryResponse['data']);
             }
-            setDriverIDList([...historyRespone.driverList].map(driverID =>(
-                {
-                    driverID:driverID,
-                    dataTime: historyRespone.data
-                        .filter(function(indexTime){return parseInt(indexTime.D_id) ==driverID;})
-                        .map(index=> Object.assign(index, {
-                            lat: index.Latitude,
-                            lng: index.Longitude,
+            console.log(historyRespone['data']);
+            if(historyRespone.data.length>0){
+                setDriverIDList([...historyRespone.driverList].map(driverID =>(
+                    {
+                        driverID:driverID,
+                        dataTime: historyRespone.data
+                            .filter(function(indexTime){return parseInt(indexTime.D_id) ==driverID;})
+                            .map(index=> Object.assign(index, {
+                                lat: index.Latitude,
+                                lng: index.Longitude,
                             }))
 
                     })));
-
-            setRestaurantList(_.uniqBy(routeHistoryResponse['data'].filter(node=>node.nodetype==0), function(p){ return p.price; }));
-
+            }
             noti('success', t(`Loaded ${routeHistoryResponse.data.length} Records!`, `已載入${routeHistoryResponse.data.length}筆記錄`));
-            // if (routeHistoryResponse.data[0]) {
-            //     setData(routeHistoryResponse.data);
-            //     const center = [routeHistoryResponse.data[0].lat, routeHistoryResponse.data[0].long]
-            // }
-
         } catch (e) {
             noti('error', e.toString());
         }
@@ -362,7 +372,8 @@ export default () => {
         console.log(value);
         return value;
     }
-    console.log(driverIDList);
+    console.log(orderList);
+    console.log(restaurantList);
     return (
         <div>
             <Drawer
@@ -544,7 +555,7 @@ export default () => {
 
                             center={[cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude]}
                             zoom={13}
-                            scrollWheelZoom={false}
+                            // scrollWheelZoom={true}
                             className={classes.map}
                             whenCreated={ mapInstance => { mapRef.current = mapInstance } }
                 >
@@ -556,7 +567,7 @@ export default () => {
                     {/*{driverIDList.length>0 && driverIDList?.map((driver,index)=>(*/}
                     {/*    <Polyline color="red" positions={driverIDList[index]?.dataTime} />))*/}
                     {/*}*/}
-                    {driverIDList.length>0 && driverIDList?.map((driver,index)=>(
+                    {driverIDList[0]?.dataTime?.length>0 && driverIDList?.map((driver,index)=>(
 
                             <Marker
                                 icon={L.icon({ iconUrl: carIcon })}
@@ -565,31 +576,34 @@ export default () => {
                                 {/*<Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*/}
                             </Marker>))
                     }
-                    {
-                        routeHistoryList.length>0 && routeHistoryList?.map(node=>(
-                        <Marker
-                        icon={L.icon({
-                            iconUrl: (node.nodetype==0?LocalShippingIcon:storeIcon),
-                            iconSize: new L.Point(35, 50)
-                        })}
-                        position={[node.Latitude,node.Longitude]}
+                    {/*{restaurantList && restaurantList?.map((restaurant,index)=>(*/}
+                    {/*    <Marker*/}
+                    {/*        icon={L.icon({*/}
+                    {/*            iconUrl: storeIcon,*/}
+                    {/*            iconSize: new L.Point(35, 50)*/}
+                    {/*        })}*/}
+                    {/*        position={[restaurant.Latitude,restaurant.Longitude]}*/}
 
+                    {/*    >*/}
+                    {/*        /!*<Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*!/*/}
+                    {/*    </Marker>*/}
+                    {/*))*/}
+                    {/*}*/}
+
+                    {orderList?.length>0 && orderList?.map((order,index)=>(
+                        <Marker
+                            icon={L.icon({
+                                iconUrl: LocalShippingIcon,
+                                iconSize: new L.Point(35, 50)
+                            })}
+                            position={[order.Latitude,order.Longitude]}
                         >
-                    {/*<Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*!/*/}
-                        </Marker>))
-                    }
-                    {driverIDList[driverIDList.length - 1] && driverIDList?.map((driver,index)=>(
-                            <Marker
-                                icon={L.icon({ iconUrl: endIcon })}
-                                position={[driver.dataTime[driver.dataTime.length-1].Latitude,
-                                            driver.dataTime[driver.dataTime.length-1].Longitude]}
-                            >
-                                {/*<Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*/}
-                            </Marker>
-                        ))
+                            {/*<Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*/}
+                        </Marker>
+                    ))
                     }
                     {
-                        driverIDList.length>0 && driverIDList.map((driver,index)=>(
+                        driverIDList[0]?.dataTime?.length>0 && driverIDList.map((driver,index)=>(
                             <ReactLeafletDriftMarker
                                 position={
                                     {
