@@ -39,11 +39,12 @@
     "redux-thunk": "^2.4.0",
     "sass": "^1.35.2",
     "services": "0.0.3",
+    "underscore": "^1.13.1",
     "web-vitals": "^1.1.2",
     "webpack-cli": "^4.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-scripts --openssl-legacy-provider start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import LocalShippingIcon from "../asset/images/truck.svg";
 import storeIcon from "../asset/images/store.png";
 import inventoryIcon from "../asset/images/delivery.png";
+
 const useStyles = makeStyles((theme) => ({
   map: {
     height: `90vh`,

@@ -9,12 +9,21 @@ import {
 import {
     MapContainer,
     TileLayer,
-    Popup
+    Popup,
+    Marker,
+    Polyline
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import _, { map } from 'underscore';
 import startIcon from '../asset/images/begin.png';
 import endIcon from '../asset/images/end.png';
 import carSideIcon from '../asset/images/vehicle.png';
+
+import LocalShippingIcon from "../asset/images/truck.svg";
+import storeIcon from "../asset/images/store.png";
+import inventoryIcon from "../asset/images/delivery.png";
+
+
 import Grid from '@material-ui/core/Grid';
 import ModifiedMatTable from '../component/ModifiedMatTable';
 import IconButton from '@material-ui/core/IconButton';
@@ -49,11 +58,12 @@ import { KeyboardDateTimePicker } from '@material-ui/pickers';
 import L from 'leaflet';
 import geolocationApi from "../services/geolocationApi";
 import MenuItem from "@mui/material/MenuItem";
-import {Marker, Polyline} from "leaflet/dist/leaflet-src.esm";
+// import {Marker, Polyline} from "leaflet/dist/leaflet-src.esm";
 import {Tooltip} from "@material-ui/core";
 import driverApi from "../services/driverApi";
 import ResultDialog from "../component/ResultDialog";
 import routeHistoryApi from "../services/routeHistoryApi";
+import historyApi from "../services/historyApi";
 const MySlider = withStyles({
     root: {
         color: '#87ff69'
@@ -84,7 +94,8 @@ const useStyles = makeStyles(theme => createStyles({
         height: `90vh`
     },
     formControl: {
-        minWidth: 150
+        minWidth: 150,
+
     },
     drawer: {
         width: drawerWidth,
@@ -125,6 +136,12 @@ const useStyles = makeStyles(theme => createStyles({
     }
 }));
 
+const methodList = [{
+    'name':'SIMA',
+    },{
+    'name':'SPMA',
+    }];
+
 const initCenter = [23.553118, 121.0211024];
 
 function gen_position() {
@@ -133,30 +150,33 @@ function gen_position() {
         lng:(Math.random()*180-90).toFixed(8)}
 }
 
-
-
-
-
-
-
 export default () => {
     const classes = useStyles();
     const [speedLimit, setSpeedLimit] = useState(70);
     const [data, setData] = useState([]);
     const polyline = data.filter(i => i.lat && i.long).map(d => [d.lat, d.long]);
     const [currentSelectedCity,setCurrentSelectedCity]= useState(0);
-    const [center,setCenter] = useState(initCenter);
+    const [currentCityLabel, setCurrentCityLabel] = useState('');
+    const [center,setCenter] = useState({
+        City: "Chandigarh",
+        City_id: 9,
+        Country_Code: 1,
+        lat: 30.7353,
+        lng: 76.7911,
+        id: "616bc7199a588a2f1d67aed6",
+        radius: 0.048094947,
+    });
     const [open, setOpen] = useState(true);
-    const [delay, setDelay] = useState(50);
+    const [delay, setDelay] = useState(5000);
     const theme = useTheme();
     const axios = createAxios();
     const t = useTrans();
     const noti = useNoti();
     const fleets = useVehicleData(true);
-    const initialDate = new Date('2019-01-01T00:00');
+    const initialDate = new Date('2021-12-12T10:50');
     const select = useNativeSelect('');
     const from = useDateTimePicker(initialDate);
-    const to = useDateTimePicker(new Date());
+    const to = useDateTimePicker(new Date('2021-12-12T11:00'));
     const [isRunning, setIsRunning] = useState(false);
     const mapRef = useRef();
     const [driverIDList,setDriverIDList] = useState([]);
@@ -165,8 +185,11 @@ export default () => {
     const [openDialog, setOpenDialog] = React.useState(false);
     const [fullWidthDialog, setFullWidthDialog] = React.useState(true);
     const [maxWidthDialog, setMaxWidthDialog] = React.useState('sm');
-
-
+    const [history,setHistory] = useState([]);
+    const [currentMethod,setCurrentMethod]=useState(0);
+    const [timePosition,setTimePosition] = useState(0);
+    const [routeHistoryList,setRouteHistoryList] = useState([]);
+    const [restaurantList,setRestaurantList] = useState([]);
     const handleClickOpen = () => {setOpenDialog(true);};
     const handleClose = () => {setOpenDialog(false);};
     const handleMaxWidthChange = (event) => {setMaxWidthDialog(event.target.value,);};
@@ -183,13 +206,9 @@ export default () => {
     }]);
 
 
-    async function getDriverIDFromCity(){
-        const response = await driverApi.getDriverIDBaseOnCIty({
-            cityId:cityList[currentSelectedCity]?.City_id
-        });
-        setDriverIDList(response['data']);
-    };
-
+    useEffect(()=>{
+        console.log(currentCityLabel);
+    },[currentCityLabel]);
 
     useEffect(()=>{
         setTimeout(() => {// updates position every 5 sec
@@ -204,56 +223,52 @@ export default () => {
 
 
     useEffect(()=>{
+        console.log(cityList);
         if(cityList.length>0){
             setCurrentSelectedCity(0);
         }
     },[cityList]);
 
     useEffect(()=>{
-        console.log(currentSelectedCity);
-        console.log(cityList[currentSelectedCity]);
-        console.log([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude])
+        console.log(routeHistoryList);
+    },[routeHistoryList]);
+
+    useEffect(()=>{
+        console.log(isRunning);
+    },[isRunning]);
+    useEffect(()=>{
+        console.log(timePosition);
+    },[timePosition]);
+
+    useEffect(()=>{
         setCenter([cityList[currentSelectedCity]?.Latitude, cityList[currentSelectedCity]?.Longitude]);
         const {current={}}=mapRef;
         if('getSize' in current){
             current?.setView([cityList[currentSelectedCity]?.Latitude,
                                                     cityList[currentSelectedCity]?.Longitude],15);
         }
-        setVehiclePos([cityList[currentSelectedCity]?.Latitude,
-                            cityList[currentSelectedCity]?.Longitude]);
-
-        setPrevPos([cityList[currentSelectedCity]?.Latitude,
-                        cityList[currentSelectedCity]?.Longitude]);
+        setVehiclePos({
+            lat: cityList[currentSelectedCity]?.Latitude,
+            lng: cityList[currentSelectedCity]?.Longitude
+        });
+        setPrevPos({
+            lat: cityList[currentSelectedCity]?.Latitude,
+            lng: cityList[currentSelectedCity]?.Longitude
+        });
 
     },[currentSelectedCity]);
 
-    useEffect(()=>{
-        console.log(prevPos);
-    },[prevPos]);
+    useInterval(() => {
+        const next = timePosition+1;
 
-    useEffect(()=>{
-        console.log(vehiclePos);
-    },[vehiclePos]);
-
-    useEffect(()=>{
-        console.log(from);
-    },[from]);
-
-    useEffect(()=>{
-        console.log(to);
-    },[to]);
-
-
-    // useInterval(() => {
-    //     const next = polyline[index + 1];
-    //     if (!next) {
-    //         setIsRunning(false);
-    //         return;
-    //     }
-    //     setVehiclePos(next);
-    //     // setViewport(prev => ({ ...prev, center: next}));
-    //     setIndex(index + 1);
-    // }, isRunning ? delay : null);
+        if (next>=driverIDList[0].dataTime.length) {
+            setIsRunning(false);
+            return;
+        }
+        setTimePosition(next);
+        console.log({next});
+        // setViewport(prev => ({ ...prev, center: next}));
+    }, isRunning ? delay : null);
 
     function resolveStatus(i) {
         let status;
@@ -275,39 +290,79 @@ export default () => {
         { title: t('Address', 'address'), field: 'address' }
     ];
 
-    function play() {setIsRunning(true);}
+    function play() {
+        setIsRunning(true);
+        console.log(driverIDList.length);
+        console.log(driverIDList[0].dataTime.length);
+        if(driverIDList[0].length>0&&timePosition>=driverIDList[0].dataTime.length){
+            timePosition(0);
+        }
+
+    }
     function pause() {setIsRunning(false);}
     const handleChange = (event, newValue) => {setDelay(newValue);};
-    const handleSpeedLimitChange = (event) => {setSpeedLimit(event.target.value);};
+    const handleSpeedLimitChange = (event) => {
+        setSpeedLimit(event.target.value);
+    };
     const handleDrawerOpen = () => {setOpen(true);};
     const handleDrawerClose = () => {setOpen(false);};
+
     const handleChangeCity=(event)=>{
+        console.log(event.target.value);
         setCurrentSelectedCity(event.target.value);
-        getDriverIDFromCity();
+        setCurrentCityLabel(cityList[event.target.value].City);
+    }
+    const handleChangeMethod=(event)=>{
+        setCurrentMethod(event.target.value);
     }
 
     const submit = async (event) => {
         try {
-            const response = await  routeHistoryApi.getHistoryBaseOnDriverID({
+            const params = {
                 cityID:cityList[currentSelectedCity].City_id,
+                method: currentMethod,
                 from: from.value,
                 to: to.value
-            });
-            const length = response.data.length;
-            if (length > 0) {
-                response.data = response.data.map(x => Object.assign(x, {
+            }
+
+            const routeHistoryResponse = await  routeHistoryApi.getHistoryBaseOnDriverID(params);
+            const historyRespone = await  historyApi.getHistoryBaseOnCityID(params);
+
+
+            if (routeHistoryResponse.data.length> 0) {
+                routeHistoryResponse.data = routeHistoryResponse.data.map(x => Object.assign(x, {
                     _trackerTime: DateTime.fromISO(x.trackerTime).toFormat('hh:mm:ss dd-MMM-yyyy')
                 }));
             }
-            noti('success', t(`Loaded ${length} Records!`, `已載入${length}筆記錄`));
-            if (response.data[0]) {
-                setData(response.data);
-                const center = [response.data[0].lat, response.data[0].long]
-            }
+            setDriverIDList([...historyRespone.driverList].map(driverID =>(
+                {
+                    driverID:driverID,
+                    dataTime: historyRespone.data
+                        .filter(function(indexTime){return parseInt(indexTime.D_id) ==driverID;})
+                        .map(index=> Object.assign(index, {
+                            lat: index.Latitude,
+                            lng: index.Longitude,
+                            }))
+
+                    })));
+
+            setRestaurantList(_.uniqBy(routeHistoryResponse['data'].filter(node=>node.nodetype==0), function(p){ return p.price; }));
+
+            noti('success', t(`Loaded ${routeHistoryResponse.data.length} Records!`, `已載入${routeHistoryResponse.data.length}筆記錄`));
+            // if (routeHistoryResponse.data[0]) {
+            //     setData(routeHistoryResponse.data);
+            //     const center = [routeHistoryResponse.data[0].lat, routeHistoryResponse.data[0].long]
+            // }
+
         } catch (e) {
             noti('error', e.toString());
         }
     }
+    function renderValue(value){
+        console.log(value);
+        return value;
+    }
+    console.log(driverIDList);
     return (
         <div>
             <Drawer
@@ -353,24 +408,61 @@ export default () => {
                     <ListItem>
                         <Grid container spacing={5}>
                             <Grid item>
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel htmlFor="select-vehicle">{t('Select City', 'Select City')}</InputLabel>
-                                    <Select
-                                        // native
-                                        labelId="select-city"
-                                        value={cityList[currentSelectedCity]?.City}
-                                        onChange={handleChangeCity}
-                                    >
-                                        {cityList?.map((city, index) =>(
-                                                // <optgroup key={index} label={city?.City_Name}>
-                                                //     {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)
-                                                //     )}
-                                                // </optgroup>
-                                            <MenuItem value={index}>{city?.City}</MenuItem>
+                                    <Grid container spacing={5}>
+                                        <Grid item xs={6}>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="select-vehicle">{t('Select City', 'Select City')}</InputLabel>
+                                                <Select
+                                                    // native
+                                                    labelId="select-city"
+                                                    value={currentCityLabel}
+                                                    onChange={handleChangeCity}
+                                                    renderValue={() => renderValue(currentCityLabel)}
+                                                >
+                                                    {cityList?.map((city, index) =>(
+                                                        // <optgroup key={index} label={city?.City_Name}>
+                                                        //     {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)
+                                                        //     )}
+                                                        // </optgroup>
+                                                        <MenuItem
+                                                            value={index}
+                                                        >
+                                                            {city?.City}
+                                                        </MenuItem>
 
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <FormControl className={classes.formControl}>
+                                                <InputLabel htmlFor="select-vehicle">{t('Select Method', 'Select Method')}</InputLabel>
+                                                <Select
+                                                    // native
+                                                    labelId="select-method"
+                                                    value={methodList[currentMethod]?.name}
+                                                    onChange={handleChangeMethod}
+                                                    renderValue={() => renderValue(methodList[currentMethod]?.name)}
+                                                >
+                                                    {methodList?.map((method, index) =>(
+                                                        // <optgroup key={index} label={city?.City_Name}>
+                                                        //     {city.map(({registrationNumber: r}, index) => (<option key={index} value={index}>city?.City_Name</option>)
+                                                        //     )}
+                                                        // </optgroup>
+                                                        <MenuItem
+                                                            value={index}
+                                                            className="d-flex justify-content-between"
+                                                            style={{ width: "170px" }}
+                                                        >
+                                                            {method?.name}
+                                                        </MenuItem>
+
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+
+                                        </Grid>
+                                    </Grid>
                             </Grid>
                         </Grid>
                     </ListItem>
@@ -445,8 +537,11 @@ export default () => {
                 >
                     <MenuIcon />
                 </IconButton>
+
                 {currentSelectedCity &&
+
                 <MapContainer
+
                             center={[cityList[currentSelectedCity]?.Latitude,cityList[currentSelectedCity]?.Longitude]}
                             zoom={13}
                             scrollWheelZoom={false}
@@ -458,47 +553,70 @@ export default () => {
                         zoomControl="false"
                         maxZoom="28"
                     />
-                    {polyline[0] &&
-                    <Polyline color="red" positions={polyline} />}
-                    {polyline[0] &&
-                    <Marker
-                        icon={L.icon({ iconUrl: startIcon })}
-                        position={polyline[0]}
-                    >
-                        <Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>
-                    </Marker>}
-                    {polyline[polyline.length - 1] &&
-                    <Marker
-                        icon={L.icon({ iconUrl: endIcon })}
-                        position={polyline[polyline.length - 1]}
-                    >
-                        <Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>
-                    </Marker>}
-                    {/*{vehiclePos && prevPos &&*/}
-                    {/*<LeafletTrackingMarker*/}
-                    {/*    icon={carIcon}*/}
-                    {/*    position={[vehiclePos?.lat, vehiclePos?.lng]}*/}
-                    {/*    previousPosition={[prevPos?.lat,prevPos?.lng]}*/}
-                    {/*    duration={1000} />*/}
+                    {/*{driverIDList.length>0 && driverIDList?.map((driver,index)=>(*/}
+                    {/*    <Polyline color="red" positions={driverIDList[index]?.dataTime} />))*/}
                     {/*}*/}
-                    <ReactLeafletDriftMarker
-                        // if position changes, marker will drift its way to new position
-                        position={vehiclePos}
-                        // time in ms that marker will take to reach its destination
-                        duration={1000}
-                        icon={carIcon} >
-                        <Popup>Hi this is a popup</Popup>
-                        {/*<Tooltip>Hi here is a tooltip</Tooltip>*/}
-                    </ReactLeafletDriftMarker>
-                    <ResultDialog
-                        handleClickOpen={()=>handleClickOpen()}
-                        open ={openDialog}
-                        handleClose ={()=>handleClose()}
-                        fullWidth ={fullWidthDialog}
-                        maxWidth ={maxWidthDialog}
-                        handleMaxWidthChange = {()=>handleMaxWidthChange()}
-                        handleFullWidthChange = {()=>handleFullWidthChange()}
-                    />
+                    {driverIDList.length>0 && driverIDList?.map((driver,index)=>(
+
+                            <Marker
+                                icon={L.icon({ iconUrl: carIcon })}
+                                position={[driver.dataTime[0].Latitude,driver.dataTime[0].Longitude]}
+                            >
+                                {/*<Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*/}
+                            </Marker>))
+                    }
+                    {
+                        routeHistoryList.length>0 && routeHistoryList?.map(node=>(
+                        <Marker
+                        icon={L.icon({
+                            iconUrl: (node.nodetype==0?LocalShippingIcon:storeIcon),
+                            iconSize: new L.Point(35, 50)
+                        })}
+                        position={[node.Latitude,node.Longitude]}
+
+                        >
+                    {/*<Tooltip permanent direction='left'>{t('Start point', 'Start point')}</Tooltip>*!/*/}
+                        </Marker>))
+                    }
+                    {driverIDList[driverIDList.length - 1] && driverIDList?.map((driver,index)=>(
+                            <Marker
+                                icon={L.icon({ iconUrl: endIcon })}
+                                position={[driver.dataTime[driver.dataTime.length-1].Latitude,
+                                            driver.dataTime[driver.dataTime.length-1].Longitude]}
+                            >
+                                {/*<Tooltip permanent direction='left'>{t('End point', 'End point')}</Tooltip>*/}
+                            </Marker>
+                        ))
+                    }
+                    {
+                        driverIDList.length>0 && driverIDList.map((driver,index)=>(
+                            <ReactLeafletDriftMarker
+                                position={
+                                    {
+                                        lat:driver.dataTime[timePosition].Latitude,
+                                        lng:driver.dataTime[timePosition].Longitude,
+                                    }
+                                }
+
+                                // time in ms that marker will take to reach its destination
+                                duration={1000}
+                                icon={L.icon({ iconUrl: carSideIcon })} >
+                                keepAtCenter={false}
+                                {/*<Popup>Hi this is a popup</Popup>*/}
+                                {/*<Tooltip>Hi here is a tooltip</Tooltip>*/}
+                            </ReactLeafletDriftMarker>
+                        ))
+                    }
+
+                    {/*<ResultDialog*/}
+                    {/*    handleClickOpen={()=>handleClickOpen()}*/}
+                    {/*    open ={openDialog}*/}
+                    {/*    handleClose ={()=>handleClose()}*/}
+                    {/*    fullWidth ={fullWidthDialog}*/}
+                    {/*    maxWidth ={maxWidthDialog}*/}
+                    {/*    handleMaxWidthChange = {()=>handleMaxWidthChange()}*/}
+                    {/*    handleFullWidthChange = {()=>handleFullWidthChange()}*/}
+                    {/*/>*/}
                 </MapContainer>}
             </main>
         </div>
