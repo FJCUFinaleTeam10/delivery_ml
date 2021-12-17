@@ -10,24 +10,24 @@ export default (props) => {
     };
     const localization = {
         pagination: {
-            labelDisplayedRows: t('{from}-{to} of {count}', '{from}-{to}/{count} 條資料'),
-            labelRowsSelect: t('rows', '行'),
-            nextTooltip: t('Next Page', '下一頁'),
-            previousTooltip: t('Previous Page', '上一頁'),
-            firstTooltip: t('First Page', '首頁'),
-            lastTooltip: t('Last Page', '最後一頁')
+            labelDisplayedRows: t('{from}-{to} of {count}', '{from}-{to} of {count}'),
+            labelRowsSelect: t('rows', 'rows'),
+            nextTooltip: t('Next Page', 'Next Page'),
+            previousTooltip: t('Previous Page', 'Previous Page'),
+            firstTooltip: t('First Page', 'First Page'),
+            lastTooltip: t('Last Page', 'Last Page')
         },
         header: {
-            actions: t('Actions', '操作')
+            actions: t('Actions', 'Actions')
         },
         toolbar: {
-            searchPlaceholder: t('Search', '搜索')
+            searchPlaceholder: t('Search', 'Search')
         },
         body: {
-            emptyDataSourceMessage: t('No records to display', '沒有數據'),
+            emptyDataSourceMessage: t('No records to display', 'No records to display'),
             editRow: {
-                saveTooltip: t('Save', '儲存'),
-                cancelTooltip: t('Cancel', '返回')
+                saveTooltip: t('Save', 'Save'),
+                cancelTooltip: t('Cancel', 'Cancel')
             }
         }
     };
