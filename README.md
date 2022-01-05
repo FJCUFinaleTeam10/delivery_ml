@@ -4,6 +4,8 @@
 #   Installation step
 ## typing these command below
     $ git clone git@github.com:FJCUFinaleTeam10/delivery_ml.git
+    $ cd delivery_ml
     $ npm install 
+    $ scp .env.example .env
     $ npm run start
 
